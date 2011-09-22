@@ -113,10 +113,10 @@ static int
 plsql_ShowWindow (lua_State *L)
 {
 	static const int show_flags[] = {
-		SW_HIDE, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE
+		SW_SHOW, SW_HIDE, SW_MAXIMIZE, SW_MINIMIZE, SW_RESTORE
 	};
 	static const char *const show_names[] = {
-		"hide", "maximize", "minimize", "restore", NULL
+		"show", "hide", "maximize", "minimize", "restore", NULL
 	};
 	const HWND hwnd = (HWND) luaL_checkinteger(L, 1);
 	int i, flags = 0;
@@ -127,7 +127,7 @@ plsql_ShowWindow (lua_State *L)
 	for (i = lua_gettop(L); i >= OPT_START; --i) {
 		flags |= show_flags[luaL_checkoption(L, i, NULL, show_names)];
 	}
-	ShowWindow(hwnd, flags);
+	ShowWindow(hwnd, (flags ? flags : SW_SHOWNORMAL));
 	return 0;
 }
 
