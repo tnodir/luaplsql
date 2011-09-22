@@ -20,6 +20,19 @@ plsql_ShowMessage (lua_State *L)
  * Returns: boolean
  */
 static int
+plsql_FlashWindow (lua_State *L)
+{
+	const HWND hwnd = (HWND) luaL_checkinteger(L, 1);
+
+	lua_pushboolean(L, FlashWindow(hwnd, 1));
+	return 1;
+}
+
+/*
+ * Arguments: window_handle (number)
+ * Returns: boolean
+ */
+static int
 plsql_SetForegroundWindow (lua_State *L)
 {
 	const HWND hwnd = (HWND) luaL_checkinteger(L, 1);
@@ -383,6 +396,7 @@ plsql_KillTimer (lua_State *L)
 
 static luaL_reg plsqllib[] = {
     {"ShowMessage",		plsql_ShowMessage},
+    {"FlashWindow",		plsql_FlashWindow},
     {"SetForegroundWindow",	plsql_SetForegroundWindow},
     {"GetForegroundWindow",	plsql_GetForegroundWindow},
     {"KeyDown",			plsql_KeyDown},
