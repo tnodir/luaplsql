@@ -291,9 +291,7 @@ local function OnDeactivate()
 
 	-- Workaround: Close the IUP module
 	if iup then
-		local p = newproxy(true)
-		getmetatable(p).__gc = iup.Close
-		iup[p] = true
+		iup.Close()
 	end
 end
 

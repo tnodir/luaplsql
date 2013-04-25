@@ -72,7 +72,9 @@ do
 
 	local function exec(chunk, err)
 		if chunk then
-			setfenv(chunk, env)
+			if setfenv then
+				setfenv(chunk, env)
+			end
 			chunk, err = pcall(chunk)
 			if chunk then
 				if err then IDE.CloseFile(plsql.WindowClose.Quiet) end
@@ -86,9 +88,17 @@ do
 		feedbackHandle = handle
 
 		if command == '-E' then
-			return exec(loadstring(params))
+			if setfenv then
+				return exec(loadstring(params))
+			else
+				return exec(load(params, "=(loadstring)", "bt", env))
+			end
 		elseif command == '-F' then
-			return exec(loadfile(params))
+			if setfenv then
+				return exec(loadfile(params))
+			else
+				return exec(loadfile(params, "bt", env))
+			end
 		end
 		CommandFeedback(feedbackHandle, "Unknown command: " .. command)
 	end
