@@ -64,6 +64,7 @@ typedef BOOL (*IDE_SelectWindow)(int Index);
 typedef BOOL (*IDE_ActivateWindow)(int Index);
 typedef BOOL (*IDE_IsWindowModified)();
 typedef BOOL (*IDE_IsWindowRunning)();
+typedef int (*IDE_WindowPin)(int Pin);
 typedef void (*IDE_SplashCreate)(int ProgressMax);
 typedef void (*IDE_SplashHide)();
 typedef void (*IDE_SplashWrite)(const char *Text);
@@ -157,6 +158,27 @@ typedef int (*IDE_SelectProcOverloading)(const char *Owner, const char *PackageN
 	const char *ProcedureName);
 typedef char *(*IDE_GetSessionValue)(const char *Name);
 typedef BOOL (*IDE_CheckDBVersion)(const char *Version);
+typedef BOOL (*IDE_GetConnectionInfoEx)(int Index, char **Username, char **Password,
+	char **Database, char **ConnectAs);
+typedef int (*IDE_FindConnection)(const char *Username, const char *Database);
+typedef int (*IDE_AddConnection)(const char *Username, const char *Password,
+	const char *Database, const char *ConnectAs);
+typedef BOOL (*IDE_ConnectConnection)(int Index);
+typedef BOOL (*IDE_SetMainConnection)(int Index);
+typedef int (*IDE_GetWindowConnection)();
+typedef BOOL (*IDE_SetWindowConnection)(int Index);
+typedef BOOL (*IDE_GetConnectionTree)(int Index, char **Description, char **Username,
+	char **Password, char **Database, char **ConnectAs, int *ID, int *ParentID);
+typedef BOOL (*IDE_GetConnectionInfoEx10)(int Index, char **Username, char **Password,
+	char **Database, char **ConnectAs, char **Edition, char **Workspace);
+typedef int (*IDE_FindConnectionEx10)(const char *Username, const char *Database,
+	const char *Edition, const char *Workspace);
+typedef int (*IDE_AddConnectionEx10)(const char *Username, const char *Password,
+	const char *Database, const char *ConnectAs,
+	const char *Edition, const char *Workspace);
+typedef BOOL (*IDE_GetConnectionTreeEx10)(int Index, char **Description, char **Username,
+	char **Password, char **Database, char **ConnectAs,
+	char **Edition, char **Workspace, int *ID, int *ParentID);
 
 
 /*
@@ -1065,6 +1087,25 @@ plsql_ide_IsWindowRunning (lua_State *L)
 
 	if (func) {
 		lua_pushboolean(L, func());
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ * Arguments: [Pin (boolean)]
+ * Returns: boolean
+ */
+static int
+plsql_ide_WindowPin (lua_State *L)
+{
+	IDE_WindowPin func = (IDE_WindowPin) plsqldev_func[85];
+
+	if (func) {
+		const int pin = lua_isnoneornil(L, 1) ? 2
+		 : (lua_toboolean(L, 1) ? 1 : 0);
+
+		lua_pushboolean(L, func(pin));
 		return 1;
 	}
 	return 0;
@@ -2413,6 +2454,197 @@ plsql_ide_CheckDBVersion (lua_State *L)
 	return 0;
 }
 
+/*
+ * Arguments: Index (number)
+ * Returns: [Username (string), Password (string),
+ *	Database (string), ConnectAs (string),
+ *	Edition (string), Workspace (string)]
+ */
+static int
+plsql_ide_GetConnectionInfoEx (lua_State *L)
+{
+	IDE_GetConnectionInfoEx func = (IDE_GetConnectionInfoEx) plsqldev_func[240];
+	IDE_GetConnectionInfoEx10 func10 = (IDE_GetConnectionInfoEx10) plsqldev_func[250];
+
+	if (func10 || func) {
+		const int ix = luaL_checkinteger(L, 1);
+		char *usr, *pwd, *db, *role, *edt, *wspc;
+
+		if (func10 ? func10(ix, &usr, &pwd, &db, &role, &edt, &wspc)
+		 : func(ix, &usr, &pwd, &db, &role)) {
+			lua_pushstring(L, usr);
+			lua_pushstring(L, pwd);
+			lua_pushstring(L, db);
+			lua_pushstring(L, role);
+			lua_pushstring(L, edt);
+			lua_pushstring(L, wspc);
+			return 6;
+		}
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Username (string), Database (string),
+ *	Edition (string), Workspace (string)
+ * Returns: [Index (number)]
+ */
+static int
+plsql_ide_FindConnection (lua_State *L)
+{
+	IDE_FindConnection func = (IDE_FindConnection) plsqldev_func[241];
+	IDE_FindConnectionEx10 func10 = (IDE_FindConnectionEx10) plsqldev_func[251];
+
+	if (func10 || func) {
+		const char *usr = luaL_checkstring(L, 1);
+		const char *db = luaL_checkstring(L, 2);
+		const char *edt = func10 ? luaL_checkstring(L, 3) : NULL;
+		const char *wspc = func10 ? luaL_checkstring(L, 4) : NULL;
+		const int ix = func10 ? func10(usr, db, edt, wspc)
+		 : func(usr, db);
+
+		if (ix != -1) {
+			lua_pushinteger(L, ix);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Username (string), Password (string),
+ *	Database (string), ConnectAs (string),
+ *	Edition (string), Workspace (string)
+ * Returns: Index (number)
+ */
+static int
+plsql_ide_AddConnection (lua_State *L)
+{
+	IDE_AddConnection func = (IDE_AddConnection) plsqldev_func[242];
+	IDE_AddConnectionEx10 func10 = (IDE_AddConnectionEx10) plsqldev_func[252];
+
+	if (func10 || func) {
+		const char *usr = luaL_checkstring(L, 1);
+		const char *pwd = luaL_checkstring(L, 2);
+		const char *db = luaL_checkstring(L, 3);
+		const char *role = luaL_checkstring(L, 4);
+		const char *edt = func10 ? luaL_checkstring(L, 5) : NULL;
+		const char *wspc = func10 ? luaL_checkstring(L, 6) : NULL;
+		const int ix = func10 ? func10(usr, pwd, db, role, edt, wspc)
+		 : func(usr, pwd, db, role);
+
+		if (ix != -1) {
+			lua_pushinteger(L, ix);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Index (number)
+ * Returns: [boolean]
+ */
+static int
+plsql_ide_ConnectConnection (lua_State *L)
+{
+	IDE_ConnectConnection func = (IDE_ConnectConnection) plsqldev_func[243];
+
+	if (func) {
+		const int ix = luaL_checkinteger(L, 1);
+
+		lua_pushboolean(L, func(ix));
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Index (number)
+ * Returns: [boolean]
+ */
+static int
+plsql_ide_SetMainConnection (lua_State *L)
+{
+	IDE_SetMainConnection func = (IDE_SetMainConnection) plsqldev_func[244];
+
+	if (func) {
+		const int ix = luaL_checkinteger(L, 1);
+
+		lua_pushboolean(L, func(ix));
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ * Returns: [Index (number)]
+ */
+static int
+plsql_ide_GetWindowConnection (lua_State *L)
+{
+	IDE_GetWindowConnection func = (IDE_GetWindowConnection) plsqldev_func[245];
+
+	if (func) {
+		lua_pushinteger(L, func());
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Index (number)
+ * Returns: [boolean]
+ */
+static int
+plsql_ide_SetWindowConnection (lua_State *L)
+{
+	IDE_SetWindowConnection func = (IDE_SetWindowConnection) plsqldev_func[246];
+
+	if (func) {
+		const int ix = luaL_checkinteger(L, 1);
+
+		lua_pushboolean(L, func(ix));
+		return 1;
+	}
+	return 0;
+}
+
+/*
+ * Arguments: Index (number)
+ * Returns: [Description (string), Username (string), Password (string),
+ *	Database (string), ConnectAs (string),
+ *	Edition (string), Workspace (string),
+ *	ID (number), ParentID (number)]
+ */
+static int
+plsql_ide_GetConnectionTree (lua_State *L)
+{
+	IDE_GetConnectionTree func = (IDE_GetConnectionTree) plsqldev_func[247];
+	IDE_GetConnectionTreeEx10 func10 = (IDE_GetConnectionTreeEx10) plsqldev_func[253];
+
+	if (func10 || func) {
+		const int ix = luaL_checkinteger(L, 1);
+		char *descr, *usr, *pwd, *db, *role, *edt, *wspc;
+		int id, pid;
+
+		if (func10 ? func10(ix, &descr, &usr, &pwd, &db, &role, &edt, &wspc, &id, &pid)
+		 : func(ix, &descr, &usr, &pwd, &db, &role, &id, &pid)) {
+			lua_pushstring(L, descr);
+			lua_pushstring(L, usr);
+			lua_pushstring(L, pwd);
+			lua_pushstring(L, db);
+			lua_pushstring(L, role);
+			lua_pushstring(L, edt);
+			lua_pushstring(L, wspc);
+			lua_pushinteger(L, id);
+			lua_pushinteger(L, pid);
+			return 9;
+		}
+	}
+	return 0;
+}
+
 
 /*
  * Arguments: action (number)
@@ -2580,7 +2812,7 @@ plsql_ide_EmptyUndoBuffer (lua_State *L)
 }
 
 
-static luaL_reg plsql_idelib[] = {
+static luaL_Reg plsql_idelib[] = {
     {"MenuState",		plsql_ide_MenuState},
     {"Connected",		plsql_ide_Connected},
     {"GetConnectionInfo",	plsql_ide_GetConnectionInfo},
@@ -2636,6 +2868,7 @@ static luaL_reg plsql_idelib[] = {
     {"ActivateWindow",		plsql_ide_ActivateWindow},
     {"IsWindowModified",	plsql_ide_IsWindowModified},
     {"IsWindowRunning",		plsql_ide_IsWindowRunning},
+    {"WindowPin",		plsql_ide_WindowPin},
     {"SplashCreate",		plsql_ide_SplashCreate},
     {"SplashHide",		plsql_ide_SplashHide},
     {"SplashWrite",		plsql_ide_SplashWrite},
@@ -2712,6 +2945,14 @@ static luaL_reg plsql_idelib[] = {
     {"SelectProcOverloading",	plsql_ide_SelectProcOverloading},
     {"GetSessionValue",		plsql_ide_GetSessionValue},
     {"CheckDBVersion",		plsql_ide_CheckDBVersion},
+    {"GetConnectionInfoEx",	plsql_ide_GetConnectionInfoEx},
+    {"FindConnection",		plsql_ide_FindConnection},
+    {"AddConnection",		plsql_ide_AddConnection},
+    {"ConnectConnection",	plsql_ide_ConnectConnection},
+    {"SetMainConnection",	plsql_ide_SetMainConnection},
+    {"GetWindowConnection",	plsql_ide_GetWindowConnection},
+    {"SetWindowConnection",	plsql_ide_SetWindowConnection},
+    {"GetConnectionTree",	plsql_ide_GetConnectionTree},
     {"SetWindowCloseAction",	plsql_ide_SetWindowCloseAction},
     {"GetWindowCloseAction",	plsql_ide_GetWindowCloseAction},
     {"InsertText",		plsql_ide_InsertText},

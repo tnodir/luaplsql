@@ -394,7 +394,7 @@ plsql_KillTimer (lua_State *L)
 }
 
 
-static luaL_reg plsqllib[] = {
+static luaL_Reg plsqllib[] = {
     {"ShowMessage",		plsql_ShowMessage},
     {"FlashWindow",		plsql_FlashWindow},
     {"SetForegroundWindow",	plsql_SetForegroundWindow},

@@ -16,6 +16,8 @@ typedef char *(*SQL_GetDBMSOutput)();
 typedef void (*SQL_SetVariable)(const char *Name, const char *Value);
 typedef char *(*SQL_GetVariable)(const char *Name);
 typedef void (*SQL_ClearVariables)();
+typedef BOOL (*SQL_SetPlugInSession)(int PlugInID, const char *Username,
+	const char *Password, const char *Database, const char *ConnectAs);
 
 
 /*
@@ -274,8 +276,30 @@ plsql_sql_ClearVariables (lua_State *L)
 	return 0;
 }
 
+/*
+ * Arguments: Username (string), Password (string),
+ *	Database (string), ConnectAs (string)
+ * Returns: [boolean]
+ */
+static int
+plsql_sql_SetPlugInSession (lua_State *L)
+{
+	SQL_SetPlugInSession func = (SQL_SetPlugInSession) plsqldev_func[57];
 
-static luaL_reg plsql_sqllib[] = {
+	if (func) {
+		const char *usr = luaL_checkstring(L, 1);
+		const char *pwd = luaL_checkstring(L, 2);
+		const char *db = luaL_checkstring(L, 3);
+		const char *role = luaL_checkstring(L, 4);
+
+		lua_pushboolean(L, func(g_PlugInId, usr, pwd, db, role));
+		return 1;
+	}
+	return 0;
+}
+
+
+static luaL_Reg plsql_sqllib[] = {
     {"Execute",			plsql_sql_Execute},
     {"FieldCount",		plsql_sql_FieldCount},
     {"Eof",			plsql_sql_Eof},
@@ -292,5 +316,6 @@ static luaL_reg plsql_sqllib[] = {
     {"SetVariable",		plsql_sql_SetVariable},
     {"GetVariable",		plsql_sql_GetVariable},
     {"ClearVariables",		plsql_sql_ClearVariables},
+    {"SetPlugInSession",	plsql_sql_SetPlugInSession},
     {NULL, NULL}
 };

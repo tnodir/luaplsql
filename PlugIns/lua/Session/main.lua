@@ -32,6 +32,34 @@ do
 end
 
 
+-- Show information about connections
+do
+	local function showConnections()
+		local ix = 0
+		local text = "Connections:\n"
+
+		while true do
+			local descr, usr, pwd, db, role, edt, wspc, id, pid =
+				IDE.GetConnectionTree(ix)
+			if not descr then break end
+
+			ix = ix + 1
+
+			text = text .. ix .. ". " .. descr .. ': '
+				.. usr .. "/" .. pwd .. "@" .. db
+				.. (role ~= '' and (" as " .. role) or "")
+				.. (edt ~= '' and (" Ed:" .. edt) or "")
+				.. (wspc ~= '' and (" Wspc:" .. wspc) or "")
+				.. " (" .. id .. "/" .. pid .. ")\n"
+		end
+
+		ShowMessage(text)
+	end
+
+	AddMenu(showConnections, "&Lua / Session / Show Connections")
+end
+
+
 -- Initialization
 local function OnActivate()
 
@@ -60,6 +88,7 @@ return {
 	BeforeExecuteWindow,
 	AfterExecuteWindow,
 	OnConnectionChange,
+	OnWindowConnectionChange,
 	OnPopup,
 	OnMainMenu,
 	OnTemplate,

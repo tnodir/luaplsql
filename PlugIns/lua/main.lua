@@ -2,18 +2,20 @@
 
 local root = plsql.RootPath()
 
+
 -- Set C-modules placement
 do
 	local cpath = root:gsub([[^\\%?\]], "") .. "\\clibs\\"
 
 	package.cpath = package.cpath
-		.. cpath .. "?51.dll;"
+		.. cpath .. "?52.dll;"
 		.. cpath .. "?.dll;"
-		.. cpath .. "lua5.1.dll;"
+		.. cpath .. "lua52.dll;"
 end
 
 
-local sys = require("sys")
+-- Global 'sys' library
+sys = require("sys")
 
 
 -- Window Types

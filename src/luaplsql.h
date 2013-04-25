@@ -30,6 +30,7 @@ PLUGIN_API int OnWindowClose (int win_type, BOOL changed);
 PLUGIN_API BOOL BeforeExecuteWindow (int win_type);
 PLUGIN_API void AfterExecuteWindow (int win_type, int result);
 PLUGIN_API void OnConnectionChange (void);
+PLUGIN_API void OnWindowConnectionChange (void);
 PLUGIN_API void OnPopup (char *obj_type, char *obj_name);
 PLUGIN_API void OnMainMenu (char *menu_name);
 PLUGIN_API BOOL OnTemplate (char *filename, const char **data);

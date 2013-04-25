@@ -29,6 +29,7 @@ typedef PLUGIN_API int (*tOnWindowClose)(int win_type, BOOL changed);
 typedef PLUGIN_API BOOL (*tBeforeExecuteWindow)(int win_type);
 typedef PLUGIN_API void (*tAfterExecuteWindow)(int win_type, int result);
 typedef PLUGIN_API void (*tOnConnectionChange)(void);
+typedef PLUGIN_API void (*tOnWindowConnectionChange)(void);
 typedef PLUGIN_API void (*tOnPopup)(char *obj_type, char *obj_name);
 typedef PLUGIN_API void (*tOnMainMenu)(char *menu_name);
 typedef PLUGIN_API BOOL (*tOnTemplate)(char *filename, const char **data);
@@ -42,37 +43,38 @@ typedef PLUGIN_API void (*tExportFinished)(void);
 typedef PLUGIN_API BOOL (*tExportPrepare)(void);
 typedef PLUGIN_API BOOL (*tExportData)(char *value);
 
-static tPlugInShortName		vPlugInShortName;
-static tIdentifyPlugIn		vIdentifyPlugIn;
-static tOnCreate		vOnCreate;
-static tOnDestroy		vOnDestroy;
-static tRegisterCallback	vRegisterCallback;
-static tOnActivate		vOnActivate;
-static tOnDeactivate		vOnDeactivate;
-static tCreateMenuItem		vCreateMenuItem;
-static tOnMenuClick		vOnMenuClick;
-static tCanClose		vCanClose;
-static tAfterStart		vAfterStart;
-static tOnBrowserChange		vOnBrowserChange;
-static tOnWindowChange		vOnWindowChange;
-static tOnWindowCreate		vOnWindowCreate;
-static tOnWindowCreated		vOnWindowCreated;
-static tOnWindowClose		vOnWindowClose;
-static tBeforeExecuteWindow	vBeforeExecuteWindow;
-static tAfterExecuteWindow	vAfterExecuteWindow;
-static tOnConnectionChange	vOnConnectionChange;
-static tOnPopup			vOnPopup;
-static tOnMainMenu		vOnMainMenu;
-static tOnTemplate		vOnTemplate;
-static tOnFileLoaded		vOnFileLoaded;
-static tOnFileSaved		vOnFileSaved;
-static tAbout			vAbout;
-static tCommandLine		vCommandLine;
-static tRegisterExport		vRegisterExport;
-static tExportInit		vExportInit;
-static tExportFinished		vExportFinished;
-static tExportPrepare		vExportPrepare;
-static tExportData		vExportData;
+static tPlugInShortName			vPlugInShortName;
+static tIdentifyPlugIn			vIdentifyPlugIn;
+static tOnCreate			vOnCreate;
+static tOnDestroy			vOnDestroy;
+static tRegisterCallback		vRegisterCallback;
+static tOnActivate			vOnActivate;
+static tOnDeactivate			vOnDeactivate;
+static tCreateMenuItem			vCreateMenuItem;
+static tOnMenuClick			vOnMenuClick;
+static tCanClose			vCanClose;
+static tAfterStart			vAfterStart;
+static tOnBrowserChange			vOnBrowserChange;
+static tOnWindowChange			vOnWindowChange;
+static tOnWindowCreate			vOnWindowCreate;
+static tOnWindowCreated			vOnWindowCreated;
+static tOnWindowClose			vOnWindowClose;
+static tBeforeExecuteWindow		vBeforeExecuteWindow;
+static tAfterExecuteWindow		vAfterExecuteWindow;
+static tOnConnectionChange		vOnConnectionChange;
+static tOnWindowConnectionChange	vOnWindowConnectionChange;
+static tOnPopup				vOnPopup;
+static tOnMainMenu			vOnMainMenu;
+static tOnTemplate			vOnTemplate;
+static tOnFileLoaded			vOnFileLoaded;
+static tOnFileSaved			vOnFileSaved;
+static tAbout				vAbout;
+static tCommandLine			vCommandLine;
+static tRegisterExport			vRegisterExport;
+static tExportInit			vExportInit;
+static tExportFinished			vExportFinished;
+static tExportPrepare			vExportPrepare;
+static tExportData			vExportData;
 
 /* Global Lua DLL Handle */
 static HINSTANCE g_DLLHandle;
@@ -134,6 +136,7 @@ load_library (void)
 	vBeforeExecuteWindow = (tBeforeExecuteWindow) GetProcAddress(g_DLLHandle, "BeforeExecuteWindow");
 	vAfterExecuteWindow = (tAfterExecuteWindow) GetProcAddress(g_DLLHandle, "AfterExecuteWindow");
 	vOnConnectionChange = (tOnConnectionChange) GetProcAddress(g_DLLHandle, "OnConnectionChange");
+	vOnWindowConnectionChange = (tOnWindowConnectionChange) GetProcAddress(g_DLLHandle, "OnWindowConnectionChange");
 	vOnPopup = (tOnPopup) GetProcAddress(g_DLLHandle, "OnPopup");
 	vOnMainMenu = (tOnMainMenu) GetProcAddress(g_DLLHandle, "OnMainMenu");
 	vOnTemplate = (tOnTemplate) GetProcAddress(g_DLLHandle, "OnTemplate");
@@ -175,6 +178,7 @@ free_library (void)
 	vBeforeExecuteWindow = NULL;
 	vAfterExecuteWindow = NULL;
 	vOnConnectionChange = NULL;
+	vOnWindowConnectionChange = NULL;
 	vOnPopup = NULL;
 	vOnMainMenu = NULL;
 	vOnTemplate = NULL;
@@ -333,6 +337,13 @@ OnConnectionChange (void)
 {
 	if (vOnConnectionChange)
 		vOnConnectionChange();
+}
+
+PLUGIN_API void
+OnWindowConnectionChange (void)
+{
+	if (vOnWindowConnectionChange)
+		vOnWindowConnectionChange();
 }
 
 PLUGIN_API void

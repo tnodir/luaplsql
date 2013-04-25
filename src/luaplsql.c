@@ -13,6 +13,36 @@
 #include "luaplsql.h"
 
 
+#if LUA_VERSION_NUM < 502
+#define lua_rawlen		lua_objlen
+#define lua_resume(L,from,n)	lua_resume((L), (n))
+#define luaL_setfuncs(L,l,n)	luaL_register((L), NULL, (l))
+
+#define luaL_newlibtable(L,l) \
+    lua_createtable(L, 0, sizeof(l) / sizeof((l)[0]) - 1)
+#define luaL_newlib(L,l) \
+    (luaL_newlibtable((L), (l)), luaL_setfuncs((L), (l), 0))
+
+#define lua_rawgetp(L,idx,p) \
+    (lua_pushlightuserdata((L), (p)), \
+     lua_rawget((L), (idx) - ((idx) < 0 && (idx) > -99 ? 1 : 0)))
+#define lua_rawsetp(L,idx,p) \
+    (lua_pushlightuserdata((L), (p)), lua_insert((L), -2), \
+     lua_rawset((L), (idx) - ((idx) < 0 && (idx) > -99 ? 1 : 0)))
+
+#define luai_writestringerror(s,p) \
+    (fprintf(stderr, (s), (p)), fflush(stderr))
+
+#define lua_absindex(L,idx) \
+    ((idx) < 0 && (idx) > -99 ? lua_gettop(L) + (idx) + 1 : (idx))
+
+#else
+#define luaL_register(L,n,l)	luaL_newlib((L), (l))
+#define lua_setfenv		lua_setuservalue
+#define lua_getfenv		lua_getuservalue
+#endif
+
+
 #define PLUGIN_DESCR	"Lua Plug-In"
 
 /* Pl/Sql Developer Window Handle */
@@ -76,6 +106,7 @@ enum {
 	Func_BeforeExecuteWindow,
 	Func_AfterExecuteWindow,
 	Func_OnConnectionChange,
+	Func_OnWindowConnectionChange,
 	Func_OnPopup,
 	Func_OnMainMenu,
 	Func_OnTemplate,
@@ -110,6 +141,7 @@ static int push_traceback_addons (int nargs);
 static int
 traceback (lua_State *L)
 {
+#if LUA_VERSION_NUM < 502
 	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
 	if (!lua_istable(L, -1)) {
 		lua_pop(L, 1);
@@ -124,6 +156,16 @@ traceback (lua_State *L)
 	lua_pushinteger(L, 2);  /* skip this function and traceback */
 	lua_call(L, 2, 1);  /* call debug.traceback */
 	return 1;
+#else
+	const char *msg = lua_tostring(L, 1);
+	if (msg)
+		luaL_traceback(L, L, msg, 1);
+	else if (!lua_isnoneornil(L, 1)) {  /* is there an error object? */
+		if (!luaL_callmeta(L, 1, "__tostring"))	 /* try its 'tostring' metamethod */
+			lua_pushliteral(L, "(no error message)");
+	}
+	return 1;
+#endif
 }
 
 static int
@@ -243,16 +285,20 @@ OnCreate (void)
 		g_WindowHandle = func ? func() : NULL;
 	}
 
-	if (g_L || !(g_L = lua_open()))
+	if (g_L || !(g_L = luaL_newstate()))
 		return;
 
 	/* open libraries */
 	luaL_openlibs(g_L);
 
-	luaL_register(g_L, "plsql", plsqllib);
-	luaL_register(g_L, "plsql.sys", plsql_syslib);
-	luaL_register(g_L, "plsql.ide", plsql_idelib);
-	luaL_register(g_L, "plsql.sql", plsql_sqllib);
+	luaL_newlib(g_L, plsqllib);
+	luaL_newlib(g_L, plsql_syslib);
+	lua_setfield(g_L, -2, "sys");
+	luaL_newlib(g_L, plsql_idelib);
+	lua_setfield(g_L, -2, "ide");
+	luaL_newlib(g_L, plsql_sqllib);
+	lua_setfield(g_L, -2, "sql");
+	lua_setglobal(g_L, "plsql");
 
 	lua_settop(g_L, 0);
 	lua_pushcfunction(g_L, traceback);
@@ -353,9 +399,12 @@ Reload (void)
 	const int cb = Func_AfterReload;
 
 	OnDeactivate();
+
+	plsql_ide_RefreshMenus(NULL);  // remove menus
+
 	OnCreate();
 
-	plsql_ide_RefreshMenus(NULL);
+	plsql_ide_RefreshMenus(NULL);  // add menus
 
 	OnActivate();
 	RegisterExport();
@@ -500,6 +549,16 @@ PLUGIN_API void
 OnConnectionChange (void)
 {
 	const int cb = Func_OnConnectionChange;
+
+	if (callback_exist(cb)) {
+		call_addons(cb, 0, 0, NULL, NULL);
+	}
+}
+
+PLUGIN_API void
+OnWindowConnectionChange (void)
+{
+	const int cb = Func_OnWindowConnectionChange;
 
 	if (callback_exist(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);

@@ -129,7 +129,7 @@ do
 
 			-- Get source text
 			local source = Rtrim(IDE.GetObjectSource("PACKAGE BODY", objectOwner, objectName))
-			if Find(source, "^\/%*") then
+			if Find(source, "^/%*") then
 				source = ''  -- Skip empty package body
 			else
 				source = source .. "\r\n/\r\n"
@@ -339,6 +339,7 @@ return {
 	BeforeExecuteWindow,
 	AfterExecuteWindow,
 	OnConnectionChange,
+	OnWindowConnectionChange,
 	OnPopup,
 	OnMainMenu,
 	OnTemplate,

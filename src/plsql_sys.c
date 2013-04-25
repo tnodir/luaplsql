@@ -86,7 +86,7 @@ plsql_sys_TNSNAMES (lua_State *L)
 }
 
 
-static luaL_reg plsql_syslib[] = {
+static luaL_Reg plsql_syslib[] = {
     {"Version",		plsql_sys_Version},
     {"Registry",	plsql_sys_Registry},
     {"RootDir",		plsql_sys_RootDir},

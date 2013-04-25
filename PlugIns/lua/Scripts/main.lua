@@ -109,6 +109,7 @@ return {
 	BeforeExecuteWindow,
 	AfterExecuteWindow,
 	OnConnectionChange,
+	OnWindowConnectionChange,
 	OnPopup,
 	OnMainMenu,
 	OnTemplate,
