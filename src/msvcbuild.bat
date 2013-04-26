@@ -17,7 +17,8 @@
 
 @del *.obj *.manifest *.lib *.exp
 
-@move luaplug.dll ../PlugIns
-@move luaplsql.dll ../PlugIns/lua/clibs
+@move /Y luaplug.dll ..\PlugIns
+@mkdir ..\PlugIns\lua\clibs
+@move /Y luaplsql.dll ..\PlugIns\lua\clibs
 
 :END
