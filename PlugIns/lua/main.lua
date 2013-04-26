@@ -5,12 +5,13 @@ local root = plsql.RootPath()
 
 -- Set C-modules placement
 do
-	local cpath = root:gsub([[^\\%?\]], "") .. "\\clibs\\"
+	local cpath = root:gsub("^\\\\%?\\", "") .. "\\clibs\\"
+	local version = (_VERSION == "Lua 5.2") and "52" or "51"
 
 	package.cpath = package.cpath
-		.. cpath .. "?52.dll;"
-		.. cpath .. "?.dll;"
-		.. cpath .. "lua52.dll;"
+		.. ";" .. cpath .. "?" .. version .. ".dll"
+		.. ";" .. cpath .. "?.dll"
+		.. ";" .. cpath .. "lua" .. version .. ".dll"
 end
 
 
