@@ -27,7 +27,7 @@ Installation:
 - Copy "luaplsql/PlugIns" into "C:\Program Files\PLSQL Developer\"
 
 
-Usefull modules:
+Useful modules:
 
 - IUP: http://luaforge.net/projects/iup/
 - LPeg: http://www.inf.puc-rio.br/~roberto/lpeg.html
