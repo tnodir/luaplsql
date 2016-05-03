@@ -2468,7 +2468,8 @@ plsql_ide_GetConnectionInfoEx (lua_State *L)
 
 	if (func10 || func) {
 		const int ix = luaL_checkinteger(L, 1);
-		char *usr, *pwd, *db, *role, *edt, *wspc;
+		char *usr, *pwd, *db, *role;
+		char *edt = NULL, *wspc = NULL;
 
 		if (func10 ? func10(ix, &usr, &pwd, &db, &role, &edt, &wspc)
 		 : func(ix, &usr, &pwd, &db, &role)) {
@@ -2625,7 +2626,8 @@ plsql_ide_GetConnectionTree (lua_State *L)
 
 	if (func10 || func) {
 		const int ix = luaL_checkinteger(L, 1);
-		char *descr, *usr, *pwd, *db, *role, *edt, *wspc;
+		char *descr, *usr, *pwd, *db, *role;
+		char *edt = NULL, *wspc = NULL;
 		int id, pid;
 
 		if (func10 ? func10(ix, &descr, &usr, &pwd, &db, &role, &edt, &wspc, &id, &pid)
