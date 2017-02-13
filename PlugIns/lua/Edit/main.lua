@@ -22,9 +22,11 @@ do
 		IDE.LineScroll(0, step)
 		IDE.SetCursor(0, IDE.GetCursorY() + step)
 	end
-
-	upMenuItem = AddMenu(Scroll, "&Lua / Edit / Scroll Up")
-	AddMenu(Scroll, "&Lua / Edit / Scroll Down")
+	
+	AddMenu(nil, "TAB=LuaPLSQL")
+	AddMenu(nil, "GROUP=Edit")
+	upMenuItem = AddMenu(Scroll, "ITEM=Scroll Up")
+	AddMenu(Scroll, "ITEM=Scroll Down")
 end
 
 
@@ -36,8 +38,9 @@ do
 		IDE.SetCursor(0, 0)
 		IDE.InsertText(text)
 	end
-
-	AddMenu(ToSqlWindow, "&Lua / Edit / Selection / Duplicate")
+	
+	AddMenu(nil, "MENUITEM=Selection")
+	AddMenu(ToSqlWindow, "SUBITEM=Duplicate")
 end
 
 -- Inverse Special Copy (Java, C++)
@@ -53,7 +56,7 @@ do
 		IDE.InsertText(Gsub(text, "\\n", ''))
 	end
 
-	AddMenu(InverseSpecial, "&Lua / Edit / Selection / Inverse Special")
+	AddMenu(InverseSpecial, "SUBITEM=Inverse Special")
 end
 
 
@@ -72,7 +75,7 @@ do
 		IDE.InsertText(Gsub(text, "%w+", Capitalize))
 	end
 
-	AddMenu(InitCaps, "&Lua / Edit / Selection / Init Caps")
+	AddMenu(InitCaps, "SUBITEM=Init Caps")
 end
 
 
@@ -85,7 +88,7 @@ do
 		IDE.InsertText(Gsub(text, "[ \t]+([\r\n])", "%1"))
 	end
 
-	AddMenu(ClearBlanks, "&Lua / Edit / Selection / Clear Blanks")
+	AddMenu(ClearBlanks, "SUBITEM=Clear Blanks")
 end
 
 
@@ -97,9 +100,59 @@ do
 		IDE.CreateWindow(plsql.WindowType.SQL, text)
 	end
 
-	AddMenu(ToSqlWindow, "&Lua / Edit / Selection / SQL Window")
+	AddMenu(ToSqlWindow, "SUBITEM=SQL Window")
 end
 
+-- Copy selected text to new SQL window
+do
+	local function ToSqlWindow()
+		local text = IDE.GetSelectedText()
+
+		IDE.CreateWindow(plsql.WindowType.SQL, text)
+	end
+
+	AddMenu(ToSqlWindow, "SUBITEM=to SQL Win")
+end
+
+
+-- Copy selected text to new SQL window and execute it
+do
+	local function ToSqlWindowExecute()
+		local text = IDE.GetSelectedText()
+	
+		IDE.CreateWindow(plsql.WindowType.SQL, text)
+		
+		-- execute
+		IDE.Perform(1)
+	end
+	
+	AddMenu(ToSqlWindowExecute, "SUBITEM=to SQL Win execute")
+end
+
+-- Copy selected text to new Command window
+do
+	local function ToCommandWindow()
+		local text = IDE.GetSelectedText()
+
+		IDE.CreateWindow(plsql.WindowType.Command, text)
+	end
+
+	AddMenu(ToCommandWindow, "SUBITEM=to Command Win")
+end
+
+-- Copy selected text to new Command window and execute it
+do
+	local function ToCommandWindowExecute()
+		local text = IDE.GetSelectedText()
+	
+		IDE.CreateWindow(plsql.WindowType.Command, text)
+		
+		-- execute
+		IDE.Perform(1)
+	end
+	
+	AddMenu(ToCommandWindowExecute, "SUBITEM=to Command Win execute")
+end
 
 -- Addon description
 local function About()
