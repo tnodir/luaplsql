@@ -85,7 +85,7 @@ static unsigned int g_Funcs;
 static unsigned int g_PopupMenus;
 
 #define MAX_ADDONS		1000
-#define MAX_MENUS		98
+#define MAX_MENUS		96
 
 /* Default menus */
 #define PLUGIN_MENU_RELOAD	99
@@ -376,8 +376,12 @@ CreateMenuItem (int i)
 	const char *s = NULL;
 
 	/* Plugin menus */
+	if (i == PLUGIN_MENU_RELOAD-2)
+		return "TAB=LuaPLSQL";
+	if (i == PLUGIN_MENU_RELOAD-1)
+		return "GROUP=LuaPLSQL";
 	if (i == PLUGIN_MENU_RELOAD)
-		return "ITEM=Re&load Plug-In";
+		return "LARGEITEM=Re&load Plug-In";
 
 	/* Addon menus */
 	if (g_L) {
