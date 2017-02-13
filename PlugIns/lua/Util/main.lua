@@ -95,7 +95,9 @@ do
 		end
 	end
 
-	AddMenu(WrapUnits, "&Lua / Utilities / Wrap Program Units")
+	AddMenu(nil, "TAB=LuaPLSQL")
+	AddMenu(nil, "GROUP=Utilities")
+	AddMenu(WrapUnits, "ITEM=Wrap Program Units")
 end
 
 
@@ -179,8 +181,8 @@ do
 			ShowMessage(errorMessage)
 		end
 	end
-
-	AddMenu(ExportPackages, "&Lua / Utilities / Export Packages")
+	
+	AddMenu(ExportPackages, "ITEM=Export Packages")
 end
 
 
@@ -190,7 +192,7 @@ do
 		IDE.OpenFile(plsql.WindowType.SQL, SYS.TNSNAMES())
 	end
 
-	AddMenu(OpenTNSFile, "&Lua / Utilities / Open TNS File")
+	AddMenu(OpenTNSFile, "ITEM=Open TNS File")
 end
 
 
