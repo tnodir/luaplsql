@@ -151,7 +151,10 @@ do
 			addon_info.dep = dep
 		end
 	end
-
+	
+	add_menu(nil, "TAB=LuaPLSQL [tabindex=7]")
+	add_menu(nil, "GROUP=Lua")
+	
 	-- Traverse plugin directory
 	local fd = sys.handle()
 
@@ -195,6 +198,9 @@ do
 			install_addon(name)
 		end
 	end
+	
+	add_menu(nil, "TAB=LuaPLSQL [tabindex=7]")
+	add_menu(nil, "GROUP=Other [groupindex=9]")
 end
 
 return addons
