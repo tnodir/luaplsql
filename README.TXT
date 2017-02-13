@@ -35,8 +35,8 @@ Useful modules:
 
 Thanks to:
 
-- Alexey Matveev, <matveev_alexey@mail.ru>
-- Grzegorz Zagorski, <Grzegorz.Zagorski@hansemerkur.de>
+- Alexey Matveev
+- Grzegorz Zagorski
 
 --
 Nodir Temirkhodjaev, <nodir.temir@gmail.com>
