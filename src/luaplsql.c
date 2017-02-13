@@ -377,7 +377,7 @@ CreateMenuItem (int i)
 
 	/* Plugin menus */
 	if (i == PLUGIN_MENU_RELOAD)
-		return "&Lua / Re&load Plug-In";
+		return "ITEM=Re&load Plug-In";
 
 	/* Addon menus */
 	if (g_L) {
