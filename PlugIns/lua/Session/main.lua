@@ -28,7 +28,9 @@ do
 		end
 	end
 
-	AddMenu(ReConnect, "&Lua / Session / Re-Connect")
+	AddMenu(nil, "TAB=LuaPLSQL")
+	AddMenu(nil, "GROUP=Session")
+	AddMenu(ReConnect, "ITEM=Re-Connect")
 end
 
 
@@ -55,8 +57,8 @@ do
 
 		ShowMessage(text)
 	end
-
-	AddMenu(showConnections, "&Lua / Session / Show Connections")
+	
+	AddMenu(showConnections, "ITEM=Show Connections")
 end
 
 
