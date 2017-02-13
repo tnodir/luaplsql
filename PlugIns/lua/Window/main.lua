@@ -13,7 +13,9 @@ local ShowMessage = plsql.ShowMessage
 
 -- Reload File
 do
-	AddMenu(IDE.ReloadFile, "&Lua / Window / Reload File")
+	AddMenu(nil, "TAB=LuaPLSQL")
+	AddMenu(nil, "GROUP=Window")
+	AddMenu(IDE.ReloadFile, "ITEM=Reload File")
 end
 
 
@@ -32,7 +34,7 @@ do
 		end
 	end
 
-	AddMenu(CloseAllQuietly, "&Lua / Window / Close All Quietly")
+	AddMenu(CloseAllQuietly, "ITEM=Close All Quietly")
 end
 
 
@@ -42,7 +44,7 @@ do
 		IDE.SetReadOnly(not IDE.GetReadOnly())
 	end  
 
-	AddMenu(ToggleReadOnly, "&Lua / Window / Read-Only")
+	AddMenu(ToggleReadOnly, "ITEM=Read-Only")
 end 
 
 
@@ -64,7 +66,7 @@ do
 		end
 	end
 
-	AddMenu(ToggleFullscreen, "&Lua / Window / Fullscreen")
+	AddMenu(ToggleFullscreen, "ITEM=Fullscreen")
 end
 
 
