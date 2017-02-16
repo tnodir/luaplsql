@@ -732,16 +732,22 @@ plsql_ide_ActivateKeywords (lua_State *L)
 	return 0;
 }
 
-static int
-plsql_ide_RefreshMenus (lua_State *L)
+static void
+RefreshMenus (void)
 {
 	IDE_RefreshMenus func = (IDE_RefreshMenus) plsqldev_func[64];
-
-	(void) L;
 
 	if (func) {
 		func(g_PlugInId);
 	}
+}
+
+static int
+plsql_ide_RefreshMenus (lua_State *L)
+{
+	(void) L;
+
+	RefreshMenus();
 	return 0;
 }
 

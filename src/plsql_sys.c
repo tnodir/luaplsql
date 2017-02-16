@@ -7,19 +7,28 @@ typedef char *(*SYS_OracleHome)();
 typedef char *(*SYS_TNSNAMES)(const char *Param);
 
 
+static int
+Version (void)
+{
+	static int g_Version = 0;  // Pl/Sql Developer Version
+
+	if (!g_Version) {
+		SYS_Version func = (SYS_Version) plsqldev_func[1];
+
+		if (func) {
+			g_Version = func();
+		}
+	}
+	return g_Version;
+}
+
 /*
  * Returns: [number]
  */
 static int
 plsql_sys_Version (lua_State *L)
 {
-	SYS_Version func = (SYS_Version) plsqldev_func[1];
-
-	if (func) {
-		lua_pushinteger(L, func());
-		return 1;
-	}
-	return 0;
+	return Version();
 }
 
 /*

@@ -57,6 +57,9 @@ static int g_PlugInId;
 static PLSQL_Function plsqldev_func[NFUNCTIONS];
 
 
+/* Global Flags */
+static int g_IsActive;
+
 /* Global Lua State */
 static lua_State *g_L;
 
@@ -272,11 +275,13 @@ IdentifyPlugIn (int id)
 
 /*
  * Startup sequence: IdentifyPlugIn, OnCreate, RegisterCallback, CreateMenuItem, OnActivate, ...
- * Therefore, here Pl/Sql functions are not available.
+ * Therefore, 1-st time here Pl/Sql functions are not available.
  */
 PLUGIN_API void
 OnCreate (void)
 {
+	if (!g_IsActive) return;
+
 	if (g_L || !(g_L = luaL_newstate()))
 		return;
 
@@ -343,7 +348,11 @@ OnActivate (void)
 {
 	const int cb = Func_OnActivate;
 
+	g_IsActive = 1;
+
 	OnCreate();
+
+	RefreshMenus();  // add menus
 
 	if (callback_exist(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
@@ -360,12 +369,18 @@ OnDeactivate (void)
 	}
 
 	OnDestroy();
+
+	g_IsActive = 0;
+
+	RefreshMenus();  // remove menus
 }
 
 PLUGIN_API const char *
 CreateMenuItem (int i)
 {
 	const char *s = NULL;
+
+	if (!g_IsActive) return NULL;
 
 	/* Plugin menus */
 	if (i == PLUGIN_MENU_RELOAD)
@@ -392,13 +407,6 @@ Reload (void)
 	const int cb = Func_AfterReload;
 
 	OnDeactivate();
-
-	plsql_ide_RefreshMenus(NULL);  // remove menus
-
-	OnCreate();
-
-	plsql_ide_RefreshMenus(NULL);  // add menus
-
 	OnActivate();
 	RegisterExport();
 
