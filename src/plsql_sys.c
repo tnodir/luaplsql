@@ -28,7 +28,8 @@ Version (void)
 static int
 plsql_sys_Version (lua_State *L)
 {
-	return Version();
+	lua_pushinteger(L, Version());
+	return 1;
 }
 
 /*
