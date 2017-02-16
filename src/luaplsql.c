@@ -85,10 +85,7 @@ static unsigned int g_Funcs;
 static unsigned int g_PopupMenus;
 
 #define MAX_ADDONS		1000
-#define MAX_MENUS		98
-
-/* Default menus */
-#define PLUGIN_MENU_RELOAD	99
+#define MAX_MENUS		99
 
 enum {
 	Func_Start = 0,
@@ -343,9 +340,21 @@ RegisterCallback (int i, PLSQL_Function func)
 		plsqldev_func[i] = func;
 }
 
+static void
+AfterReload (void)
+{
+	const int cb = Func_AfterReload;
+
+	if (callback_exist(cb)) {
+		call_addons(cb, 0, 0, NULL, NULL);
+	}
+}
+
 PLUGIN_API void
 OnActivate (void)
 {
+	static unsigned int g_ActivateCount = 0;
+
 	const int cb = Func_OnActivate;
 
 	g_IsActive = 1;
@@ -357,6 +366,9 @@ OnActivate (void)
 	if (callback_exist(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
+
+	if (g_ActivateCount++)
+		AfterReload();
 }
 
 PLUGIN_API void
@@ -382,10 +394,6 @@ CreateMenuItem (int i)
 
 	if (!g_IsActive) return NULL;
 
-	/* Plugin menus */
-	if (i == PLUGIN_MENU_RELOAD)
-		return "&Lua / Re&load Plug-In";
-
 	/* Addon menus */
 	if (g_L) {
 		int top = 0;
@@ -401,33 +409,11 @@ CreateMenuItem (int i)
 	return s;
 }
 
-static void
-Reload (void)
-{
-	const int cb = Func_AfterReload;
-
-	OnDeactivate();
-	OnActivate();
-	RegisterExport();
-
-	if (callback_exist(cb)) {
-		call_addons(cb, 0, 0, NULL, NULL);
-	}
-}
-
 PLUGIN_API void
 OnMenuClick (int i)
 {
-	if (!g_L) return;
-
-	/* Plugin menus */
-	if (i == PLUGIN_MENU_RELOAD) {
-		Reload();
-		return;
-	}
-
 	/* Addon menus */
-	{
+	if (g_L) {
 		int top = 0;
 
 		if (g_LNCalls++ != 0)
