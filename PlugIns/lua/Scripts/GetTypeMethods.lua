@@ -67,7 +67,7 @@ local function GetTypeMethods()
 	iup.MainLoop()
 	dlg:destroy()
 
-	--AddMenu(GetTypeMethods, "&Lua / Edit / Get Type Methods")
+	--AddMenu(GetTypeMethods, "Lua / Edit / Get Type Methods")
 end
 
 GetTypeMethods()

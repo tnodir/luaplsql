@@ -30,14 +30,13 @@ do
 			'plugin lua -f "' .. filename .. '"', true)
 	end
 
-	AddMenu(ExecuteScript, "&Lua / Scripts / Execute Script")
-	AddMenu(nil, "&Lua / Scripts / -")
+	AddMenu(ExecuteScript, "Lua / Scripts / Execute File")
 
 	-- Traverse scripts directory
 	for name, is_dir in sys.dir(root .. '\\' .. addonDir) do
 		if not is_dir and name ~= "main.lua" then
 			local menuItem = AddMenu(ExecuteScript,
-				"&Lua / Scripts / " .. name)
+				"Lua / Scripts / Files / " .. name)
 			menuItems[menuItem] = name
 		end
 	end

@@ -28,7 +28,7 @@ do
 		end
 	end
 
-	AddMenu(ReConnect, "&Lua / Session / Re-Connect")
+	AddMenu(ReConnect, "Lua / Session / Re-Connect")
 end
 
 
@@ -56,7 +56,7 @@ do
 		ShowMessage(text)
 	end
 
-	AddMenu(showConnections, "&Lua / Session / Show Connections")
+	AddMenu(showConnections, "Lua / Session / Show Connections")
 end
 
 

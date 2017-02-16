@@ -23,8 +23,8 @@ do
 		IDE.SetCursor(0, IDE.GetCursorY() + step)
 	end
 
-	upMenuItem = AddMenu(Scroll, "&Lua / Edit / Scroll Up")
-	AddMenu(Scroll, "&Lua / Edit / Scroll Down")
+	upMenuItem = AddMenu(Scroll, "Lua / Edit / Scroll Up")
+	AddMenu(Scroll, "Lua / Edit / Scroll Down")
 end
 
 
@@ -37,7 +37,7 @@ do
 		IDE.InsertText(text)
 	end
 
-	AddMenu(ToSqlWindow, "&Lua / Edit / Selection / Duplicate")
+	AddMenu(ToSqlWindow, "Lua / Edit / Selection / Duplicate")
 end
 
 -- Inverse Special Copy (Java, C++)
@@ -53,7 +53,7 @@ do
 		IDE.InsertText(Gsub(text, "\\n", ''))
 	end
 
-	AddMenu(InverseSpecial, "&Lua / Edit / Selection / Inverse Special")
+	AddMenu(InverseSpecial, "Lua / Edit / Selection / Inverse Special")
 end
 
 
@@ -72,7 +72,7 @@ do
 		IDE.InsertText(Gsub(text, "%w+", Capitalize))
 	end
 
-	AddMenu(InitCaps, "&Lua / Edit / Selection / Init Caps")
+	AddMenu(InitCaps, "Lua / Edit / Selection / Init Caps")
 end
 
 
@@ -85,7 +85,7 @@ do
 		IDE.InsertText(Gsub(text, "[ \t]+([\r\n])", "%1"))
 	end
 
-	AddMenu(ClearBlanks, "&Lua / Edit / Selection / Clear Blanks")
+	AddMenu(ClearBlanks, "Lua / Edit / Selection / Clear Blanks")
 end
 
 
@@ -97,7 +97,7 @@ do
 		IDE.CreateWindow(plsql.WindowType.SQL, text)
 	end
 
-	AddMenu(ToSqlWindow, "&Lua / Edit / Selection / SQL Window")
+	AddMenu(ToSqlWindow, "Lua / Edit / Selection / SQL Window")
 end
 
 

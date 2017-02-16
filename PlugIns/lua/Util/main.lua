@@ -95,7 +95,7 @@ do
 		end
 	end
 
-	AddMenu(WrapUnits, "&Lua / Utilities / Wrap Program Units")
+	AddMenu(WrapUnits, "Lua / Utilities / Wrap Program Units")
 end
 
 
@@ -180,7 +180,7 @@ do
 		end
 	end
 
-	AddMenu(ExportPackages, "&Lua / Utilities / Export Packages")
+	AddMenu(ExportPackages, "Lua / Utilities / Export Packages")
 end
 
 
@@ -190,7 +190,7 @@ do
 		IDE.OpenFile(plsql.WindowType.SQL, SYS.TNSNAMES())
 	end
 
-	AddMenu(OpenTNSFile, "&Lua / Utilities / Open TNS File")
+	AddMenu(OpenTNSFile, "Lua / Utilities / Open TNS File")
 end
 
 
