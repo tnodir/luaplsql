@@ -45,10 +45,7 @@
 
 #define PLUGIN_DESCR	"Lua Plug-In"
 
-/* Pl/Sql Developer Window Handle */
-static HWND g_WindowHandle;
-
-#define ShowMessage(msg)	MessageBox(g_WindowHandle, msg, PLUGIN_DESCR, 0)
+#define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, PLUGIN_DESCR, 0)
 
 
 /* Global Lua Plug-In Identifier */
@@ -254,6 +251,7 @@ call_addons (int cb, int nargs, int oneshot,
 		}
 		lua_pop(g_L, 1);
 	}
+
 	lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
 	return res;
 }
@@ -279,12 +277,6 @@ IdentifyPlugIn (int id)
 PLUGIN_API void
 OnCreate (void)
 {
-	if (!g_WindowHandle) {
-		IDE_GetWindowHandle func = (IDE_GetWindowHandle) plsqldev_func[16];
-
-		g_WindowHandle = func ? func() : NULL;
-	}
-
 	if (g_L || !(g_L = luaL_newstate()))
 		return;
 
@@ -388,6 +380,7 @@ CreateMenuItem (int i)
 
 		lua_rawgeti(g_L, PLUGIN_ADDONS_IDX, -i);
 		s = lua_tostring(g_L, -1);
+
 		lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
 	}
 	return s;
@@ -438,6 +431,7 @@ OnMenuClick (int i)
 			if (lua_pcall(g_L, 1, 0, top + PLUGIN_TRACEBACK_IDX))
 				ShowMessage(lua_tostring(g_L, -1));
 		}
+
 		lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
 	}
 }
@@ -671,6 +665,7 @@ About (void)
 			lua_pop(g_L, 2);
 	}
 	s = lua_tostring(g_L, -1);
+
 	lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
 	return s;
 }

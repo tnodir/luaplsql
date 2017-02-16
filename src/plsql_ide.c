@@ -281,13 +281,28 @@ plsql_ide_GetAppHandle (lua_State *L)
 	return 1;
 }
 
+static HWND
+GetWindowHandle (void)
+{
+	static HWND g_WindowHandle = NULL;  // Pl/Sql Developer Window Handle
+
+	if (!g_WindowHandle) {
+		IDE_GetWindowHandle func = (IDE_GetWindowHandle) plsqldev_func[16];
+
+		if (func) {
+			g_WindowHandle = func();
+		}
+	}
+	return g_WindowHandle;
+}
+
 /*
  * Arguments: number
  */
 static int
 plsql_ide_GetWindowHandle (lua_State *L)
 {
-	lua_pushinteger(L, (int) g_WindowHandle);
+	lua_pushinteger(L, (int) GetWindowHandle());
 	return 1;
 }
 

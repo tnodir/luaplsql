@@ -177,7 +177,7 @@ plsql_MessageBox (lua_State *L)
 		case 'E': flags |= MB_ICONERROR; break;
 		}
 
-	switch (MessageBox(g_WindowHandle, msg, title, flags)) {
+	switch (MessageBox(GetWindowHandle(), msg, title, flags)) {
 	case IDABORT:	s = "Abort"; break;
 	case IDCANCEL:	s = "Cancel"; break;
 	case IDIGNORE:	s = "Ignore"; break;
@@ -204,7 +204,7 @@ plsql_SetClipboardText (lua_State *L)
 	char *pmem;
 	int res = 0;
 
-	if (!OpenClipboard(g_WindowHandle)) return 0;
+	if (!OpenClipboard(GetWindowHandle())) return 0;
 
 	if (EmptyClipboard() && s != NULL) {
 		++len; /* include '\0' */
@@ -232,7 +232,7 @@ plsql_GetClipboardText (lua_State *L)
 	HGLOBAL hmem;
 	char *pmem;
 
-	if (!OpenClipboard(g_WindowHandle)) return 0;
+	if (!OpenClipboard(GetWindowHandle())) return 0;
 
 	hmem = GetClipboardData(CF_TEXT);
 	if (!hmem)
@@ -300,7 +300,7 @@ plsql_GetFileName (lua_State *L, BOOL (APIENTRY * func)(LPOPENFILENAME), int fla
 
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = g_WindowHandle;
+	ofn.hwndOwner = GetWindowHandle();
 	ofn.lpstrFilter = filters;
 	if (filters) {
 		ofn.lpstrDefExt = strchr(filters + strlen(filters) + 1, '.');
@@ -349,6 +349,7 @@ plsql_timer_handler (HWND hwnd,	int msg, int id, DWORD time)
 	lua_pushinteger(g_L, id);
 	if (lua_pcall(g_L, 1, 0, top + PLUGIN_TRACEBACK_IDX))
 		ShowMessage(lua_tostring(g_L, -1));
+
 	lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
 }
 
