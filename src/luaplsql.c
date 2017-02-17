@@ -121,7 +121,7 @@ enum {
 	Func_End
 };
 
-#define callback_exist(func)		((g_Funcs & (1 << func)) != 0)
+#define callback_exists(cb)	((g_Funcs & (1 << cb)) != 0)
 
 /* Default behaviour on window close */
 static int g_WindowCloseAction = WINCLOSE_DEFAULT;
@@ -195,7 +195,7 @@ load_addons (void)
 	for (i = Func_Start + 1; i < Func_End; ++i) {
 		lua_rawgeti(g_L, PLUGIN_ADDONS_IDX, i * MAX_ADDONS);
 		if (lua_isfunction(g_L, -1))
-			g_Funcs |= 1 << i;
+			g_Funcs |= (1 << i);
 		lua_pop(g_L, 1);
 	}
 	return 1;
@@ -350,7 +350,7 @@ AfterReload (void)
 {
 	const int cb = Func_AfterReload;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -368,7 +368,7 @@ OnActivate (void)
 
 	RefreshMenus();  // add menus
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 
@@ -381,7 +381,7 @@ OnDeactivate (void)
 {
 	const int cb = Func_OnDeactivate;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 
@@ -441,7 +441,7 @@ CanClose (void)
 {
 	const int cb = Func_CanClose;
 
-	return callback_exist(cb)
+	return callback_exists(cb)
 		? call_addons(cb, 0, 1, NULL, NULL) : TRUE;
 }
 
@@ -450,7 +450,7 @@ AfterStart (void)
 {
 	const int cb = Func_AfterStart;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -460,7 +460,7 @@ OnBrowserChange (void)
 {
 	const int cb = Func_OnBrowserChange;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -470,7 +470,7 @@ OnWindowChange (void)
 {
 	const int cb = Func_OnWindowChange;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -480,7 +480,7 @@ OnWindowCreate (int win_type)
 {
 	const int cb = Func_OnWindowCreate;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		call_addons(cb, 1, 0, NULL, NULL);
 	}
@@ -491,7 +491,7 @@ OnWindowCreated (int win_type)
 {
 	const int cb = Func_OnWindowCreated;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		call_addons(cb, 1, 0, NULL, NULL);
 	}
@@ -505,7 +505,7 @@ OnWindowClose (int win_type, BOOL changed)
 	int res;
 
 	if (g_WindowCloseAction != WINCLOSE_DEFAULT
-			|| !callback_exist(cb))
+			|| !callback_exists(cb))
 		return g_WindowCloseAction;
 
 	lua_pushinteger(g_L, win_type);
@@ -521,7 +521,7 @@ BeforeExecuteWindow (int win_type)
 {
 	const int cb = Func_BeforeExecuteWindow;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		return call_addons(cb, 1, 1, NULL, NULL);
 	}
@@ -533,7 +533,7 @@ AfterExecuteWindow (int win_type, int result)
 {
 	const int cb = Func_AfterExecuteWindow;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		lua_pushinteger(g_L, result);
 		call_addons(cb, 2, 1, NULL, NULL);
@@ -545,7 +545,7 @@ OnConnectionChange (void)
 {
 	const int cb = Func_OnConnectionChange;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -555,7 +555,7 @@ OnWindowConnectionChange (void)
 {
 	const int cb = Func_OnWindowConnectionChange;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 }
@@ -565,7 +565,7 @@ OnPopup (char *obj_type, char *obj_name)
 {
 	const int cb = Func_OnPopup;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushstring(g_L, obj_type);
 		lua_pushstring(g_L, obj_name);
 		call_addons(cb, 2, 0, NULL, NULL);
@@ -577,7 +577,7 @@ OnMainMenu (char *menu_name)
 {
 	const int cb = Func_OnMainMenu;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushstring(g_L, menu_name);
 		call_addons(cb, 1, 1, NULL, NULL);
 	}
@@ -605,7 +605,7 @@ OnTemplate (char *filename, const char **data)
 {
 	const int cb = Func_OnTemplate;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushstring(g_L, filename);
 		lua_pushstring(g_L, *data);
 		return call_addons(cb, 2, 1, OnTemplateArgs, (void *) data);
@@ -618,7 +618,7 @@ OnFileLoaded (int win_type, int mode)
 {
 	const int cb = Func_OnFileLoaded;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		lua_pushinteger(g_L, mode);
 		call_addons(cb, 2, 0, NULL, NULL);
@@ -630,7 +630,7 @@ OnFileSaved (int win_type, int mode)
 {
 	const int cb = Func_OnFileSaved;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, win_type);
 		lua_pushinteger(g_L, mode);
 		call_addons(cb, 2, 0, NULL, NULL);
@@ -663,7 +663,7 @@ About (void)
 	const int cb = Func_About;
 	const char *s = NULL;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, AboutArgs, (void *) &s);
 	}
 	return s ? s : "Lua Addons not loaded";
@@ -674,7 +674,7 @@ CommandLine (int handle, char *command, char *params)
 {
 	const int cb = Func_CommandLine;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, handle);
 		lua_pushstring(g_L, command);
 		lua_pushstring(g_L, params);
@@ -687,7 +687,7 @@ RegisterExport (void)
 {
 	const int cb = Func_RegisterExport;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 1, NULL, NULL);
 	}
 	return "Via Lua";
@@ -698,7 +698,7 @@ ExportInit (void)
 {
 	const int cb = Func_ExportInit;
 
-	return callback_exist(cb)
+	return callback_exists(cb)
 		? call_addons(cb, 0, 1, NULL, NULL) : TRUE;
 }
 
@@ -707,7 +707,7 @@ ExportFinished (void)
 {
 	const int cb = Func_ExportFinished;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		call_addons(cb, 0, 1, NULL, NULL);
 	}
 }
@@ -717,7 +717,7 @@ ExportPrepare (void)
 {
 	const int cb = Func_ExportPrepare;
 
-	return callback_exist(cb)
+	return callback_exists(cb)
 		? call_addons(cb, 0, 1, NULL, NULL) : TRUE;
 }
 
@@ -726,7 +726,7 @@ ExportData (char *value)
 {
 	const int cb = Func_ExportData;
 
-	if (callback_exist(cb)) {
+	if (callback_exists(cb)) {
 		lua_pushstring(g_L, value);
 		return call_addons(cb, 1, 1, NULL, NULL);
 	}
