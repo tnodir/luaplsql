@@ -324,8 +324,6 @@ OnCreate (void)
 	/* timers table */
 	lua_newtable(g_L);
 	g_Ref.timers = luaL_ref(g_L, LUA_REGISTRYINDEX);
-
-	g_LNCalls = 0;
 }
 
 PLUGIN_API void
@@ -334,6 +332,7 @@ OnDestroy (void)
 	if (g_L) {
 		lua_close(g_L);
 		g_L = NULL;
+		g_LNCalls = 0;
 		g_Funcs = 0;
 	}
 }
