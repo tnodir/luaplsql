@@ -44,6 +44,7 @@
 
 
 #define PLUGIN_DESCR	"Lua Plug-In"
+#define PLUGIN_VERSION	"1.6"
 
 #define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, PLUGIN_DESCR, 0)
 
@@ -633,7 +634,7 @@ AboutArgs (const char **data)
 		return;
 
 	if (!*data)
-		lua_pushliteral(g_L, "Lua Addons:");
+		lua_pushliteral(g_L, "Lua Addons v" PLUGIN_VERSION ":");
 	else
 		lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.about);
 
