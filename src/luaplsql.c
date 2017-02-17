@@ -70,7 +70,8 @@ static int g_LNCalls;
 static struct {
 	int traceback;  /* traceback function */
 	int addons;  /* addons table */
-	int template;  /* template data */
+	int template;  /* template string */
+	int about;  /* about string */
 	int timers;  /* timers table */
 } g_Ref;
 
@@ -312,9 +313,13 @@ OnCreate (void)
 	lua_pushvalue(g_L, -2);
 	g_Ref.traceback = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
-	/* template data */
+	/* template string */
 	lua_pushnil(g_L);
 	g_Ref.template = luaL_ref(g_L, LUA_REGISTRYINDEX);
+
+	/* about string */
+	lua_pushnil(g_L);
+	g_Ref.about = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
 	/* timers table */
 	lua_newtable(g_L);
@@ -401,7 +406,7 @@ CreateMenuItem (int i)
 		if (g_LNCalls++)
 			top = push_traceback_addons(0);
 
-		lua_rawgeti(g_L, PLUGIN_ADDONS_IDX, -i);
+		lua_rawgeti(g_L, top + PLUGIN_ADDONS_IDX, -i);
 		s = lua_tostring(g_L, -1);
 
 		lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
@@ -500,13 +505,15 @@ OnWindowClose (int win_type, BOOL changed)
 	int res;
 
 	if (g_WindowCloseAction != WINCLOSE_DEFAULT
-		|| !callback_exist(cb))
+			|| !callback_exist(cb))
 		return g_WindowCloseAction;
 
 	lua_pushinteger(g_L, win_type);
 	lua_pushboolean(g_L, changed);
 	res = call_addons(cb, 2, 0, NULL, NULL);
-	return (res & WINCLOSE_CONFIRM) ? WINCLOSE_CONFIRM : res & WINCLOSE_QUIET;
+
+	return (res & WINCLOSE_CONFIRM)
+		? WINCLOSE_CONFIRM : res & WINCLOSE_QUIET;
 }
 
 PLUGIN_API BOOL
@@ -579,17 +586,18 @@ OnMainMenu (char *menu_name)
 static void
 OnTemplateArgs (const char **data)
 {
-	if (lua_isstring(g_L, -1)) {
-		*data = lua_tostring(g_L, -1);
+	if (!lua_isstring(g_L, -1))
+		return;
 
-		/* prevent string to be collected by GC */
-		lua_pushvalue(g_L, -1);
-		lua_rawseti(g_L, LUA_REGISTRYINDEX, g_Ref.template);
+	*data = lua_tostring(g_L, -1);
 
-		/* replace 2-nd argument with the result string */
-		lua_remove(g_L, -2);
-		lua_pushboolean(g_L, 1);
-	}
+	/* prevent string to be collected by GC */
+	lua_pushvalue(g_L, -1);
+	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_Ref.template);
+
+	/* replace 2-nd argument with the result string */
+	lua_remove(g_L, -2);
+	lua_pushboolean(g_L, 1);
 }
 
 PLUGIN_API BOOL
@@ -629,39 +637,36 @@ OnFileSaved (int win_type, int mode)
 	}
 }
 
+static void
+AboutArgs (const char **data)
+{
+	if (!lua_isstring(g_L, -1))
+		return;
+
+	if (!*data)
+		lua_pushliteral(g_L, "Lua Addons:");
+	else
+		lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.about);
+
+	lua_pushliteral(g_L, "\n- ");
+
+	lua_pushvalue(g_L, -3);
+	lua_concat(g_L, 3);
+	*data = lua_tostring(g_L, -1);
+
+	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_Ref.about);
+}
+
 PLUGIN_API const char *
 About (void)
 {
 	const int cb = Func_About;
-	const char *s;
-	int top = 0;
-	int i;
+	const char *s = NULL;
 
-	if (!callback_exist(cb))
-		return "Lua Addons not loaded";
-
-	if (g_LNCalls++ != 0)
-		top = push_traceback_addons(0);
-
-	lua_pushliteral(g_L, "Lua Addons:");
-	for (i = cb * MAX_ADDONS; ; ++i) {
-		lua_pushliteral(g_L, "\n- ");
-		/* function */
-		lua_rawgeti(g_L, top + PLUGIN_ADDONS_IDX, i);
-		if (lua_isnil(g_L, -1)) {
-			lua_pop(g_L, 2);
-			break;
-		}
-		lua_pcall(g_L, 0, 1, top + PLUGIN_TRACEBACK_IDX);
-		if (lua_isstring(g_L, -1))
-			lua_concat(g_L, 3);
-		else
-			lua_pop(g_L, 2);
+	if (callback_exist(cb)) {
+		call_addons(cb, 0, 0, AboutArgs, (void *) &s);
 	}
-	s = lua_tostring(g_L, -1);
-
-	lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
-	return s;
+	return s ? s : "Lua Addons not loaded";
 }
 
 PLUGIN_API void
