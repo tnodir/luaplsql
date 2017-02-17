@@ -1,5 +1,6 @@
 -- Pl/Sql Developer Lua Plug-In
 
+local MAX_ADDONS, MAX_MENUS = ...
 local root = plsql.RootPath()
 
 
@@ -99,14 +100,36 @@ plsql.KeywordStyle = {
 }
 
 
--- Install Addons
+-- Menu
+local AddMenu, CreateMenuItem, OnMenuClick
+do
+	local names, nnames = {}, 0
+	local funcs = {}
+
+	AddMenu = function(func, name)
+		nnames = nnames + 1
+		if nnames > MAX_MENUS then
+			error"Too many menus"
+		end
+		funcs[nnames], names[nnames] = func, name
+		return nnames
+	end
+
+	CreateMenuItem = function(index)
+		return names[index]
+	end
+
+	OnMenuClick = function(index)
+		funcs[index](index)
+	end
+end
+
+-- Process Addons
 local addons = {}
 do
-	local MAX_ADDONS, MAX_MENUS = ...
-	local nfuncs, nmenus = {}, 0
-	local naddons = 0
+	local nfuncs, naddons = {}, 0
 
-	local function new_addon(funcs)
+	local function add_funcs(funcs)
 		for i, func in pairs(funcs) do
 			local n = nfuncs[i]
 			if not n then
@@ -117,16 +140,6 @@ do
 			end
 			addons[i * MAX_ADDONS + n] = func
 		end
-	end
-
-	local function add_menu(func, name)
-		nmenus = nmenus + 1
-		if nmenus > MAX_MENUS then
-			error"Too many menus"
-		end
-		addons[-nmenus] = name
-		addons[-(nmenus + MAX_MENUS)] = func
-		return nmenus
 	end
 
 	local function add_addon(name, funcs, dep)
@@ -152,26 +165,6 @@ do
 		end
 	end
 
-	-- Traverse plugin directory
-	local fd = sys.handle()
-
-	for name, is_dir in sys.dir(root) do
-		if is_dir and fd:open(root .. "\\" .. name .. "\\" .. "main.lua", 'r') then
-			-- Load addon
-			local chunk, err = loadfile(root .. "\\" .. name .. "\\" .. "main.lua")
-			if not chunk then
-				plsql.ShowMessage(err)
-			else
-				local funcs, dep = chunk(add_menu, root, name)
-				if funcs then
-					add_addon(name, funcs, dep)
-				end
-			end
-		end
-		fd:close()
-	end
-
-	-- Install addons
 	local function install_addon(name)
 		local addon_info = addons[name]
 		if not addon_info then return end
@@ -186,9 +179,62 @@ do
 			end
 		end
 
-		new_addon(addon_info.funcs)
+		add_funcs(addon_info.funcs)
 	end
 
+	-- Traverse plugin directory
+	local fd = sys.handle()
+
+	for name, is_dir in sys.dir(root) do
+		if is_dir and fd:open(root .. "\\" .. name .. "\\" .. "main.lua", 'r') then
+			-- Load addon
+			local chunk, err = loadfile(root .. "\\" .. name .. "\\" .. "main.lua")
+			if not chunk then
+				plsql.ShowMessage(err)
+			else
+				local funcs, dep = chunk(AddMenu, root, name)
+				if funcs then
+					add_addon(name, funcs, dep)
+				end
+			end
+		end
+		fd:close()
+	end
+
+	-- Install base funcs
+	add_funcs{
+		OnActivate,
+		OnDeactivate,
+		CanClose,
+		AfterStart,
+		AfterReload,
+		OnBrowserChange,
+		OnWindowChange,
+		OnWindowCreate,
+		OnWindowCreated,
+		OnWindowClose,
+		BeforeExecuteWindow,
+		AfterExecuteWindow,
+		OnConnectionChange,
+		OnWindowConnectionChange,
+		OnPopup,
+		OnMainMenu,
+		OnTemplate,
+		OnFileLoaded,
+		OnFileSaved,
+		About,
+		CommandLine,
+		RegisterExport,
+		ExportInit,
+		ExportFinished,
+		ExportPrepare,
+		ExportData,
+
+		CreateMenuItem,
+		OnMenuClick
+	}
+
+	-- Install addons
 	for i = 1, naddons do
 		local name = addons[i]
 		if name then

@@ -118,6 +118,9 @@ enum {
 	Func_ExportPrepare,
 	Func_ExportData,
 
+	Func_CreateMenuItem,
+	Func_OnMenuClick,
+
 	Func_End
 };
 
@@ -244,9 +247,9 @@ call_addons (int cb, int nargs, int oneshot,
 
 			if (arg_func)
 				arg_func(data);  /* arguments handler */
-			res |= is_nil ? 1
-				: lua_isboolean(g_L, -1) ? lua_toboolean(g_L, -1)
-				: lua_tointeger(g_L, -1);
+			res |= is_nil ? 1 : (lua_isboolean(g_L, -1)
+				? lua_toboolean(g_L, -1)
+				: lua_tointeger(g_L, -1));
 			if (oneshot && !is_nil)
 				break;
 		}
@@ -391,24 +394,21 @@ OnDeactivate (void)
 	RefreshMenus();  // remove menus
 }
 
+static void
+CreateMenuItemArgs (const char **data)
+{
+	*data = lua_tostring(g_L, -1);
+}
+
 PLUGIN_API const char *
 CreateMenuItem (int i)
 {
+	const int cb = Func_CreateMenuItem;
 	const char *s = NULL;
 
-	if (!g_IsActive) return NULL;
-
-	/* Addon menus */
-	if (g_L) {
-		int top = 0;
-
-		if (g_LNCalls++)
-			top = push_traceback_addons(0);
-
-		lua_rawgeti(g_L, top + PLUGIN_ADDONS_IDX, -i);
-		s = lua_tostring(g_L, -1);
-
-		lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
+	if (callback_exists(cb)) {
+		lua_pushinteger(g_L, i);
+		call_addons(cb, 1, 1, CreateMenuItemArgs, (void *) &s);
 	}
 	return s;
 }
@@ -416,21 +416,11 @@ CreateMenuItem (int i)
 PLUGIN_API void
 OnMenuClick (int i)
 {
-	/* Addon menus */
-	if (g_L) {
-		int top = 0;
+	const int cb = Func_OnMenuClick;
 
-		if (g_LNCalls++ != 0)
-			top = push_traceback_addons(0);
-
-		lua_rawgeti(g_L, top + PLUGIN_ADDONS_IDX, -(i + MAX_MENUS));
-		if (lua_isfunction(g_L, -1)) {
-			lua_pushinteger(g_L, i);
-			if (lua_pcall(g_L, 1, 0, top + PLUGIN_TRACEBACK_IDX))
-				ShowMessage(lua_tostring(g_L, -1));
-		}
-
-		lua_settop(g_L, --g_LNCalls ? top : PLUGIN_ADDONS_IDX);
+	if (callback_exists(cb)) {
+		lua_pushinteger(g_L, i);
+		call_addons(cb, 1, 1, NULL, NULL);
 	}
 }
 
