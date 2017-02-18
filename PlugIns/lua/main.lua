@@ -1,6 +1,10 @@
 -- Pl/Sql Developer Lua Plug-In
 
 local MAX_ADDONS, MAX_MENUS = ...
+
+local plsql = plsql
+local SYS, IDE, SQL = plsql.sys, plsql.ide, plsql.sql
+
 local root = plsql.RootPath()
 
 
@@ -101,12 +105,17 @@ plsql.KeywordStyle = {
 
 
 -- Menu
-local AddMenu, CreateMenuItem, OnMenuClick
+local add_menu, ribbon_menu
+local CreateMenuItem, OnMenuClick
 do
 	local names, nnames = {}, 0
 	local funcs = {}
 
-	AddMenu = function(func, name)
+	local is_ribbon = false
+	local ribbon_names, ribbon_nnames
+	local ribbon_indexes
+
+	add_menu = function(func, name)
 		nnames = nnames + 1
 		if nnames > MAX_MENUS then
 			error"Too many menus"
@@ -115,14 +124,95 @@ do
 		return nnames
 	end
 
+	ribbon_menu = function()
+		is_ribbon = true
+		ribbon_names, ribbon_nnames = {}, 0
+		ribbon_indexes = {}
+
+		local tabs = {}  -- menu items tree
+
+		function build_tree(index, name)
+			local t = tabs
+			for s in string.gmatch(name, "%s*([^/]+)%s*/?") do
+				s = string.gsub(s, "%s*$", "")  -- trim trailing spaces
+				local sub = t[s]
+				if not sub then
+					sub = {}
+					local i = #t + 1
+					t[s], t[i] = sub, s
+				end
+				t = sub
+			end
+			t[0] = index  -- func_index
+		end
+
+		function build_names(t, depth)
+			local n = #t
+			if n == 0 then return end
+
+			local level
+			local opt = ""
+			if depth == 1 then
+				level, opt = "TAB", " [tabindex=7]"
+			elseif depth == 2 then
+				level = "GROUP"
+			elseif depth == 3 then
+				level = "MENUITEM"
+			elseif depth == 4 then
+				level = "SUBITEM"
+			else return end
+
+			for i = 1, n do
+				local name = t[i]
+				local sub = t[name]
+
+				if depth == 3 then
+					level = #sub > 0 and "MENUITEM" or "ITEM"
+				end
+
+				ribbon_nnames = ribbon_nnames + 1
+
+				local ribbon_name = level .. "=" .. name .. opt
+				ribbon_names[ribbon_nnames] = ribbon_name
+
+				local index = sub[0]  -- func_index
+				if index then
+					ribbon_indexes[ribbon_nnames] = index
+				end
+
+				build_names(sub, depth + 1)
+			end
+		end
+
+		-- parse menus into tab:group:menuitem:subitem tree
+		for i = 1, nnames do
+			local name = names[i]
+			if name then
+				build_tree(i, name)
+			end
+		end
+
+		-- build ribbon names
+		build_names(tabs, 1)
+	end
+
 	CreateMenuItem = function(index)
-		return names[index]
+		local t = is_ribbon and ribbon_names or names
+		return t[index]
 	end
 
 	OnMenuClick = function(index)
-		funcs[index](index)
+		if is_ribbon then
+			index = ribbon_indexes[index]
+		end
+
+		local func = funcs[index]
+		if func then
+			func(index)
+		end
 	end
 end
+
 
 -- Process Addons
 local addons = {}
@@ -192,13 +282,18 @@ do
 			if not chunk then
 				plsql.ShowMessage(err)
 			else
-				local funcs, dep = chunk(AddMenu, root, name)
+				local funcs, dep = chunk(add_menu, root, name)
 				if funcs then
 					add_addon(name, funcs, dep)
 				end
 			end
 		end
 		fd:close()
+	end
+
+	-- Use Ribbon Menu with Pl/Sql Developer v12+
+	if SYS.Version() >= 1200 then
+		ribbon_menu()
 	end
 
 	-- Install base funcs
