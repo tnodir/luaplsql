@@ -131,10 +131,12 @@ do
 
 		local tabs = {}  -- menu items tree
 
+		local GMatch, GSub, SSub = string.gmatch, string.gsub, string.sub
+
 		function build_tree(index, name)
 			local t = tabs
-			for s in string.gmatch(name, "%s*([^/]+)%s*/?") do
-				s = string.gsub(s, "%s*$", "")  -- trim trailing spaces
+			for s in GMatch(name, "%s*([^/]+)%s*/?") do
+				s = GSub(s, "%s*$", "")  -- trim trailing spaces
 				local sub = t[s]
 				if not sub then
 					sub = {}
@@ -168,6 +170,11 @@ do
 
 				if depth == 3 then
 					level = #sub > 0 and "MENUITEM" or "ITEM"
+				end
+
+				-- don't override custom options
+				if SSub(name, -1) == ']' then
+					opt = ""
 				end
 
 				ribbon_nnames = ribbon_nnames + 1
