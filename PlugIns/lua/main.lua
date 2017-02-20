@@ -165,7 +165,21 @@ do
 			for i = 1, n do
 				local name = t[i]
 				local sub = t[name]
-
+				local findpat = ""
+        
+				-- don't overwrite custom indexes
+				if depth == 1 then
+					findpat = "%s%[tabindex="
+				elseif depth == 2 then
+					findpat = "%s%[groupindex="
+				end
+				if findpat ~= "" then
+					local sstart, send = string.find(name, findpat)
+					if sstart ~= nil then
+						opt = " "
+					end
+				end
+        
 				if depth == 3 then
 					level = #sub > 0 and "MENUITEM" or "ITEM"
 				end
