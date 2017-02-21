@@ -28,7 +28,7 @@ do
 		end
 	end
 
-	AddMenu(ReConnect, "Lua / Session / Re-Connect")
+	AddMenu(ReConnect, "Lua / Session / Re-Connect", [[icons\arrow_refresh.png]])
 end
 
 
