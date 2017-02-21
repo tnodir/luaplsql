@@ -106,10 +106,10 @@ plsql.KeywordStyle = {
 
 -- Menu
 local add_menu, get_menu_indexes
-local CreateMenuItem, OnMenuClick
+local CreateMenuItem, OnMenuClick, OnActivate
 do
 	local menu_names, menu_nnames = {}, 0
-	local menu_funcs = {}
+	local menu_funcs, menu_icons = {}, {}
 
 	local is_ribbon = false
 	local ribbon_names, ribbon_nnames
@@ -117,13 +117,14 @@ do
 	local ribbon_indexes  -- ribbon index -> menu index
 	local menu_indexes  -- menu index -> ribbon index
 
-	add_menu = function(func, name)
+	add_menu = function(func, name, icon)
 		menu_nnames = menu_nnames + 1
 		if menu_nnames > MAX_MENUS then
 			error"Too many menus"
 		end
 		menu_names[menu_nnames] = name
 		menu_funcs[menu_nnames] = func
+		menu_icons[menu_nnames] = icon
 		return menu_nnames
 	end
 
@@ -242,6 +243,16 @@ do
 		local func = menu_funcs[index]
 		if func then
 			func(index)
+		end
+	end
+
+	OnActivate = function()
+		for i = 1, menu_nnames do
+			local icon = menu_icons[i]
+			if icon then
+				local name = menu_names[i]
+				IDE.CreateToolButton(i, name, root .. "\\" .. icon)
+			end
 		end
 	end
 end
