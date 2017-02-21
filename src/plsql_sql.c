@@ -27,7 +27,7 @@ typedef BOOL (*SQL_SetPlugInSession)(int PlugInID, const char *Username,
 static int
 plsql_sql_Execute (lua_State *L)
 {
-	SQL_Execute func = (SQL_Execute) plsqldev_func[40];
+	SQL_Execute func = (SQL_Execute) PLSQL_FUNC[40];
 
 	if (func) {
 		const char *sql = luaL_checkstring(L, 1);
@@ -44,7 +44,7 @@ plsql_sql_Execute (lua_State *L)
 static int
 plsql_sql_FieldCount (lua_State *L)
 {
-	SQL_FieldCount func = (SQL_FieldCount) plsqldev_func[41];
+	SQL_FieldCount func = (SQL_FieldCount) PLSQL_FUNC[41];
 
 	if (func) {
 		lua_pushinteger(L, func());
@@ -59,7 +59,7 @@ plsql_sql_FieldCount (lua_State *L)
 static int
 plsql_sql_Eof (lua_State *L)
 {
-	SQL_Eof func = (SQL_Eof) plsqldev_func[42];
+	SQL_Eof func = (SQL_Eof) PLSQL_FUNC[42];
 
 	if (func) {
 		lua_pushboolean(L, func());
@@ -74,7 +74,7 @@ plsql_sql_Eof (lua_State *L)
 static int
 plsql_sql_Next (lua_State *L)
 {
-	SQL_Next func = (SQL_Next) plsqldev_func[43];
+	SQL_Next func = (SQL_Next) PLSQL_FUNC[43];
 
 	if (func) {
 		lua_pushinteger(L, func());
@@ -90,7 +90,7 @@ plsql_sql_Next (lua_State *L)
 static int
 plsql_sql_Field (lua_State *L)
 {
-	SQL_Field func = (SQL_Field) plsqldev_func[44];
+	SQL_Field func = (SQL_Field) PLSQL_FUNC[44];
 
 	if (func) {
 		const int field = luaL_checkinteger(L, 1) - 1;
@@ -108,7 +108,7 @@ plsql_sql_Field (lua_State *L)
 static int
 plsql_sql_FieldName (lua_State *L)
 {
-	SQL_FieldName func = (SQL_FieldName) plsqldev_func[45];
+	SQL_FieldName func = (SQL_FieldName) PLSQL_FUNC[45];
 
 	if (func) {
 		const int field = luaL_checkinteger(L, 1) - 1;
@@ -126,7 +126,7 @@ plsql_sql_FieldName (lua_State *L)
 static int
 plsql_sql_FieldIndex (lua_State *L)
 {
-	SQL_FieldIndex func = (SQL_FieldIndex) plsqldev_func[46];
+	SQL_FieldIndex func = (SQL_FieldIndex) PLSQL_FUNC[46];
 
 	if (func) {
 		const char *name = luaL_checkstring(L, 1);
@@ -144,7 +144,7 @@ plsql_sql_FieldIndex (lua_State *L)
 static int
 plsql_sql_FieldType (lua_State *L)
 {
-	SQL_FieldType func = (SQL_FieldType) plsqldev_func[47];
+	SQL_FieldType func = (SQL_FieldType) PLSQL_FUNC[47];
 
 	if (func) {
 		const int field = luaL_checkinteger(L, 1) - 1;
@@ -161,7 +161,7 @@ plsql_sql_FieldType (lua_State *L)
 static int
 plsql_sql_ErrorMessage (lua_State *L)
 {
-	SQL_ErrorMessage func = (SQL_ErrorMessage) plsqldev_func[48];
+	SQL_ErrorMessage func = (SQL_ErrorMessage) PLSQL_FUNC[48];
 
 	if (func) {
 		lua_pushstring(L, func());
@@ -176,7 +176,7 @@ plsql_sql_ErrorMessage (lua_State *L)
 static int
 plsql_sql_UsePlugInSession (lua_State *L)
 {
-	SQL_UsePlugInSession func = (SQL_UsePlugInSession) plsqldev_func[50];
+	SQL_UsePlugInSession func = (SQL_UsePlugInSession) PLSQL_FUNC[50];
 
 	if (func) {
 		lua_pushboolean(L, func(g_PlugInId));
@@ -188,7 +188,7 @@ plsql_sql_UsePlugInSession (lua_State *L)
 static int
 plsql_sql_UseDefaultSession (lua_State *L)
 {
-	SQL_UseDefaultSession func = (SQL_UseDefaultSession) plsqldev_func[51];
+	SQL_UseDefaultSession func = (SQL_UseDefaultSession) PLSQL_FUNC[51];
 
 	(void) L;
 
@@ -204,7 +204,7 @@ plsql_sql_UseDefaultSession (lua_State *L)
 static int
 plsql_sql_CheckConnection (lua_State *L)
 {
-	SQL_CheckConnection func = (SQL_CheckConnection) plsqldev_func[52];
+	SQL_CheckConnection func = (SQL_CheckConnection) PLSQL_FUNC[52];
 
 	if (func) {
 		lua_pushboolean(L, func());
@@ -219,7 +219,7 @@ plsql_sql_CheckConnection (lua_State *L)
 static int
 plsql_sql_GetDBMSOutput (lua_State *L)
 {
-	SQL_GetDBMSOutput func = (SQL_GetDBMSOutput) plsqldev_func[53];
+	SQL_GetDBMSOutput func = (SQL_GetDBMSOutput) PLSQL_FUNC[53];
 
 	if (func) {
 		lua_pushstring(L, func());
@@ -234,7 +234,7 @@ plsql_sql_GetDBMSOutput (lua_State *L)
 static int
 plsql_sql_SetVariable (lua_State *L)
 {
-	SQL_SetVariable func = (SQL_SetVariable) plsqldev_func[54];
+	SQL_SetVariable func = (SQL_SetVariable) PLSQL_FUNC[54];
 
 	if (func) {
 		const char *name = luaL_checkstring(L, 1);
@@ -252,7 +252,7 @@ plsql_sql_SetVariable (lua_State *L)
 static int
 plsql_sql_GetVariable (lua_State *L)
 {
-	SQL_GetVariable func = (SQL_GetVariable) plsqldev_func[55];
+	SQL_GetVariable func = (SQL_GetVariable) PLSQL_FUNC[55];
 
 	if (func) {
 		const char *name = luaL_checkstring(L, 1);
@@ -266,7 +266,7 @@ plsql_sql_GetVariable (lua_State *L)
 static int
 plsql_sql_ClearVariables (lua_State *L)
 {
-	SQL_ClearVariables func = (SQL_ClearVariables) plsqldev_func[56];
+	SQL_ClearVariables func = (SQL_ClearVariables) PLSQL_FUNC[56];
 
 	(void) L;
 
@@ -284,7 +284,7 @@ plsql_sql_ClearVariables (lua_State *L)
 static int
 plsql_sql_SetPlugInSession (lua_State *L)
 {
-	SQL_SetPlugInSession func = (SQL_SetPlugInSession) plsqldev_func[57];
+	SQL_SetPlugInSession func = (SQL_SetPlugInSession) PLSQL_FUNC[57];
 
 	if (func) {
 		const char *usr = luaL_checkstring(L, 1);

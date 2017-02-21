@@ -342,7 +342,7 @@ plsql_timer_handler (HWND hwnd,	int msg, int id, DWORD time)
 	if (g_LNCalls++ != 0)
 		top = push_traceback_addons(0);
 
-	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.timers);
+	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_timers);
 	lua_rawgeti(g_L, -1, id);
 	lua_remove(g_L, -2);
 
@@ -367,7 +367,7 @@ plsql_SetTimer (lua_State *L)
 
 	id = SetTimer(NULL, 0, elapse, (TIMERPROC) plsql_timer_handler);
 	if (id) {
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_Ref.timers);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_PlugIn.ref_timers);
 		lua_pushvalue(L, 2);  /* callback function */
 		lua_rawseti(L, -2, id);
 
@@ -386,7 +386,7 @@ plsql_KillTimer (lua_State *L)
 {
 	const int id = luaL_checkinteger(L, 1);
 
-	lua_rawgeti(L, LUA_REGISTRYINDEX, g_Ref.timers);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_PlugIn.ref_timers);
 	lua_pushnil(L);
 	lua_rawseti(L, -2, id);
 

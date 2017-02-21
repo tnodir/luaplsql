@@ -105,29 +105,34 @@ plsql.KeywordStyle = {
 
 
 -- Menu
-local add_menu, ribbon_menu
+local add_menu, get_menu_indexes
 local CreateMenuItem, OnMenuClick
 do
-	local names, nnames = {}, 0
-	local funcs = {}
+	local menu_names, menu_nnames = {}, 0
+	local menu_funcs = {}
 
 	local is_ribbon = false
 	local ribbon_names, ribbon_nnames
-	local ribbon_indexes
+
+	local ribbon_indexes  -- ribbon index -> menu index
+	local menu_indexes  -- menu index -> ribbon index
 
 	add_menu = function(func, name)
-		nnames = nnames + 1
-		if nnames > MAX_MENUS then
+		menu_nnames = menu_nnames + 1
+		if menu_nnames > MAX_MENUS then
 			error"Too many menus"
 		end
-		funcs[nnames], names[nnames] = func, name
-		return nnames
+		menu_names[menu_nnames] = name
+		menu_funcs[menu_nnames] = func
+		return menu_nnames
 	end
 
 	ribbon_menu = function()
 		is_ribbon = true
 		ribbon_names, ribbon_nnames = {}, 0
+
 		ribbon_indexes = {}
+		menu_indexes = {}
 
 		local tabs = {}  -- menu items tree
 
@@ -145,7 +150,7 @@ do
 				end
 				t = sub
 			end
-			t[0] = index  -- func_index
+			t[0] = index  -- menu_index
 		end
 
 		function build_names(t, depth)
@@ -182,9 +187,10 @@ do
 				local ribbon_name = level .. "=" .. name .. opt
 				ribbon_names[ribbon_nnames] = ribbon_name
 
-				local index = sub[0]  -- func_index
+				local index = sub[0]  -- menu_index
 				if index then
 					ribbon_indexes[ribbon_nnames] = index
+					menu_indexes[index] = ribbon_nnames
 				end
 
 				build_names(sub, depth + 1)
@@ -192,8 +198,8 @@ do
 		end
 
 		-- parse menus into tab:group:menuitem:subitem tree
-		for i = 1, nnames do
-			local name = names[i]
+		for i = 1, menu_nnames do
+			local name = menu_names[i]
 			if name then
 				build_tree(i, name)
 			end
@@ -203,8 +209,28 @@ do
 		build_names(tabs, 1)
 	end
 
+	get_menu_indexes = function()
+		local indexes, nindexes = {}, menu_nnames
+		local src, src_nindexes
+
+		-- Use Ribbon Menu with Pl/Sql Developer v12+
+		if SYS.Version() >= 1200 then
+			ribbon_menu()
+			src, src_nindexes = menu_indexes, ribbon_nnames
+		else
+			src_nindexes = menu_nnames
+		end
+
+		indexes[0] = src_nindexes
+		for i = 1, nindexes do
+			indexes[i] = src and src[i] or i
+		end
+
+		return indexes
+	end
+
 	CreateMenuItem = function(index)
-		local t = is_ribbon and ribbon_names or names
+		local t = is_ribbon and ribbon_names or menu_names
 		return t[index]
 	end
 
@@ -213,7 +239,7 @@ do
 			index = ribbon_indexes[index]
 		end
 
-		local func = funcs[index]
+		local func = menu_funcs[index]
 		if func then
 			func(index)
 		end
@@ -298,11 +324,6 @@ do
 		fd:close()
 	end
 
-	-- Use Ribbon Menu with Pl/Sql Developer v12+
-	if SYS.Version() >= 1200 then
-		ribbon_menu()
-	end
-
 	-- Install base funcs
 	add_funcs{
 		OnActivate,
@@ -345,4 +366,4 @@ do
 	end
 end
 
-return addons
+return addons, get_menu_indexes()

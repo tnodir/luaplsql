@@ -13,7 +13,7 @@ Version (void)
 	static int g_Version = 0;  // Pl/Sql Developer Version
 
 	if (!g_Version) {
-		SYS_Version func = (SYS_Version) plsqldev_func[1];
+		SYS_Version func = (SYS_Version) PLSQL_FUNC[1];
 
 		if (func) {
 			g_Version = func();
@@ -38,7 +38,7 @@ plsql_sys_Version (lua_State *L)
 static int
 plsql_sys_Registry (lua_State *L)
 {
-	SYS_Registry func = (SYS_Registry) plsqldev_func[2];
+	SYS_Registry func = (SYS_Registry) PLSQL_FUNC[2];
 
 	if (func) {
 		lua_pushstring(L, func());
@@ -53,7 +53,7 @@ plsql_sys_Registry (lua_State *L)
 static int
 plsql_sys_RootDir (lua_State *L)
 {
-	SYS_RootDir func = (SYS_RootDir) plsqldev_func[3];
+	SYS_RootDir func = (SYS_RootDir) PLSQL_FUNC[3];
 
 	if (func) {
 		lua_pushstring(L, func());
@@ -68,7 +68,7 @@ plsql_sys_RootDir (lua_State *L)
 static int
 plsql_sys_OracleHome (lua_State *L)
 {
-	SYS_OracleHome func = (SYS_OracleHome) plsqldev_func[4];
+	SYS_OracleHome func = (SYS_OracleHome) PLSQL_FUNC[4];
 
 	if (func) {
 		lua_pushstring(L, func());
@@ -84,7 +84,7 @@ plsql_sys_OracleHome (lua_State *L)
 static int
 plsql_sys_TNSNAMES (lua_State *L)
 {
-	SYS_TNSNAMES func = (SYS_TNSNAMES) plsqldev_func[8];
+	SYS_TNSNAMES func = (SYS_TNSNAMES) PLSQL_FUNC[8];
 
 	if (func) {
 		const char *param = lua_tostring(L, 1);

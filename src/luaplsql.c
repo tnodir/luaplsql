@@ -46,49 +46,13 @@
 #define PLUGIN_DESCR	"Lua Plug-In"
 #define PLUGIN_VERSION	"1.6"
 
+#define MAX_FUNCTIONS	256  /* Pl/Sql Developer Functions */
+#define MAX_ADDONS	1000
+#define MAX_MENUS	99
+
 #define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, PLUGIN_DESCR, 0)
 
-
-/* Global Lua Plug-In Identifier */
-static int g_PlugInId;
-
-/* Pl/Sql Developer Functions */
-#define NFUNCTIONS	256
-
-static PLSQL_Function plsqldev_func[NFUNCTIONS];
-
-
-/* Global Flags */
-static int g_IsActive;
-
-/* Global Lua State */
-static lua_State *g_L;
-
-/* Number of nested function calls */
-static int g_LNCalls;
-
-/* References to registry */
-static struct {
-	int traceback;  /* traceback function */
-	int addons;  /* addons table */
-	int template;  /* template string */
-	int about;  /* about string */
-	int timers;  /* timers table */
-} g_Ref;
-
-#define PLUGIN_TRACEBACK_IDX	1
-#define PLUGIN_ADDONS_IDX	2
-
-
-/* Addon functions */
-static unsigned int g_Funcs;
-
-/* Popup menu items */
-static unsigned int g_PopupMenus;
-
-#define MAX_ADDONS		1000
-#define MAX_MENUS		99
-
+/* Addon callback functions */
 enum {
 	Func_Start = 0,
 
@@ -125,10 +89,47 @@ enum {
 	Func_End
 };
 
-#define callback_exists(cb)	((g_Funcs & (1 << cb)) != 0)
+/* Global Lua Plug-In */
+static struct {
+	unsigned int is_active		: 1;  /* Is PlugIn activated? */
+	unsigned int win_close_action	: 3;  /* Default behaviour on window close */
 
-/* Default behaviour on window close */
-static int g_WindowCloseAction = WINCLOSE_DEFAULT;
+	int id;  /* Plug-In Identifier */
+
+	unsigned int cb_bits;  /* Addon callback functions bits */
+
+	/* References to registry */
+	int ref_traceback;  /* traceback function */
+	int ref_addons;  /* addons table */
+	int ref_template;  /* template string */
+	int ref_about;  /* about string */
+	int ref_timers;  /* timers table */
+
+	int ncalls;  /* Number of nested function calls */
+	lua_State *L;
+
+	char menus[1 + MAX_MENUS];  /* Menu/Ribbon indexes mapping */
+	PLSQL_Function funcs[MAX_FUNCTIONS];
+} g_PlugIn;
+
+#define g_IsActive		g_PlugIn.is_active
+#define g_WindowCloseAction	g_PlugIn.win_close_action
+
+#define g_PlugInId		g_PlugIn.id
+
+#define g_LNCalls		g_PlugIn.ncalls
+#define g_L			g_PlugIn.L
+
+#define PLSQL_MENU		g_PlugIn.menus
+#define PLSQL_FUNC		g_PlugIn.funcs
+
+#define g_NMenus		PLSQL_MENU[0]
+
+#define callback_exists(cb)	((g_PlugIn.cb_bits & (1 << cb)) != 0)
+
+#define PLUGIN_TRACEBACK_IDX	1
+#define PLUGIN_ADDONS_IDX	2
+#define PLUGIN_MENUS_IDX	3
 
 
 static int push_traceback_addons (int nargs);
@@ -187,7 +188,7 @@ load_addons (void)
 
 	lua_pushinteger(g_L, MAX_ADDONS);
 	lua_pushinteger(g_L, MAX_MENUS);
-	if (lua_pcall(g_L, 2, 1, PLUGIN_TRACEBACK_IDX))
+	if (lua_pcall(g_L, 2, 2, PLUGIN_TRACEBACK_IDX))
 		return 0;
 
 	if (!lua_istable(g_L, PLUGIN_ADDONS_IDX)) {
@@ -195,13 +196,27 @@ load_addons (void)
 		return 0;
 	}
 
+	if (!lua_istable(g_L, PLUGIN_MENUS_IDX)) {
+		lua_pushliteral(g_L, "Menu indexes table expected");
+		return 0;
+	}
+
 	/* set available functions */
 	for (i = Func_Start + 1; i < Func_End; ++i) {
 		lua_rawgeti(g_L, PLUGIN_ADDONS_IDX, i * MAX_ADDONS);
 		if (lua_isfunction(g_L, -1))
-			g_Funcs |= (1 << i);
+			g_PlugIn.cb_bits |= (1 << i);
 		lua_pop(g_L, 1);
 	}
+
+	/* set menu/ribbon indexes */
+	for (i = 0; i <= MAX_MENUS; ++i) {
+		lua_rawgeti(g_L, PLUGIN_MENUS_IDX, i);
+		PLSQL_MENU[i] = (char) lua_tointeger(g_L, -1);
+		lua_pop(g_L, 1);
+	}
+	lua_pop(g_L, 1);
+
 	return 1;
 }
 
@@ -210,8 +225,8 @@ push_traceback_addons (int nargs)
 {
 	const int top = lua_gettop(g_L);
 
-	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.traceback);
-	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.addons);
+	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_traceback);
+	lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_addons);
 	if (nargs) {
 		lua_insert(g_L, top + 1);
 		lua_insert(g_L, top + 1);
@@ -311,23 +326,23 @@ OnCreate (void)
 
 	/* addons table */
 	lua_pushvalue(g_L, -1);
-	g_Ref.addons = luaL_ref(g_L, LUA_REGISTRYINDEX);
+	g_PlugIn.ref_addons = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
 	/* traceback function */
 	lua_pushvalue(g_L, -2);
-	g_Ref.traceback = luaL_ref(g_L, LUA_REGISTRYINDEX);
+	g_PlugIn.ref_traceback = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
 	/* template string */
 	lua_pushnil(g_L);
-	g_Ref.template = luaL_ref(g_L, LUA_REGISTRYINDEX);
+	g_PlugIn.ref_template = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
 	/* about string */
 	lua_pushnil(g_L);
-	g_Ref.about = luaL_ref(g_L, LUA_REGISTRYINDEX);
+	g_PlugIn.ref_about = luaL_ref(g_L, LUA_REGISTRYINDEX);
 
 	/* timers table */
 	lua_newtable(g_L);
-	g_Ref.timers = luaL_ref(g_L, LUA_REGISTRYINDEX);
+	g_PlugIn.ref_timers = luaL_ref(g_L, LUA_REGISTRYINDEX);
 }
 
 PLUGIN_API void
@@ -337,15 +352,15 @@ OnDestroy (void)
 		lua_close(g_L);
 		g_L = NULL;
 		g_LNCalls = 0;
-		g_Funcs = 0;
+		g_PlugIn.cb_bits = 0;
 	}
 }
 
 PLUGIN_API void
 RegisterCallback (int i, PLSQL_Function func)
 {
-	if (i < NFUNCTIONS)
-		plsqldev_func[i] = func;
+	if (i < MAX_FUNCTIONS)
+		PLSQL_FUNC[i] = func;
 }
 
 static void
@@ -407,7 +422,7 @@ CreateMenuItem (int i)
 	const int cb = Func_CreateMenuItem;
 	const char *s = NULL;
 
-	if (callback_exists(cb)) {
+	if (i <= g_NMenus && callback_exists(cb)) {
 		lua_pushinteger(g_L, i);
 		call_addons(cb, 1, 1, CreateMenuItemArgs, (void *) &s);
 	}
@@ -583,7 +598,7 @@ OnTemplateArgs (const char **data)
 
 	/* prevent string to be collected by GC */
 	lua_pushvalue(g_L, -1);
-	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_Ref.template);
+	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_template);
 
 	/* replace 2-nd argument with the result string */
 	lua_remove(g_L, -2);
@@ -636,7 +651,7 @@ AboutArgs (const char **data)
 	if (!*data)
 		lua_pushliteral(g_L, "Lua Addons v" PLUGIN_VERSION ":");
 	else
-		lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_Ref.about);
+		lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_about);
 
 	lua_pushliteral(g_L, "\n- ");
 
@@ -644,7 +659,7 @@ AboutArgs (const char **data)
 	lua_concat(g_L, 3);
 	*data = lua_tostring(g_L, -1);
 
-	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_Ref.about);
+	lua_rawseti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_about);
 }
 
 PLUGIN_API const char *
