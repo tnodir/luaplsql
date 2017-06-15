@@ -47,7 +47,7 @@ plsql_SetForegroundWindow (lua_State *L)
 static int
 plsql_GetForegroundWindow (lua_State *L)
 {
-	lua_pushinteger(L, (int) GetForegroundWindow());
+	lua_pushinteger(L, (lua_Integer) GetForegroundWindow());
 	return 1;
 }
 
@@ -58,7 +58,7 @@ static int
 plsql_KeyDown (lua_State *L)
 {
 	const HWND hwnd = (HWND) luaL_checkinteger(L, 1);
-	const int key = luaL_checkinteger(L, 2);
+	const int key = luaL_checkint(L, 2);
 
 	PostMessage(hwnd, WM_KEYDOWN, key, 0);
 	return 0;
@@ -72,10 +72,10 @@ static int
 plsql_SetWindowPos (lua_State *L)
 {
 	const HWND hwnd = (HWND) luaL_checkinteger(L, 1);
-	const int x = lua_tointeger(L, 2);
-	const int y = lua_tointeger(L, 3);
-	const int w = lua_tointeger(L, 4);
-	const int h = lua_tointeger(L, 5);
+	const int x = (int) lua_tointeger(L, 2);
+	const int y = (int) lua_tointeger(L, 3);
+	const int w = (int) lua_tointeger(L, 4);
+	const int h = (int) lua_tointeger(L, 5);
 
 	SetWindowPos(hwnd, NULL, x, y, w, h, SWP_NOACTIVATE);
 	return 0;
@@ -198,7 +198,7 @@ plsql_MessageBox (lua_State *L)
 static int
 plsql_SetClipboardText (lua_State *L)
 {
-	int len;
+	size_t len;
 	const char *s = lua_tolstring(L, 1, &len);
 	HGLOBAL hmem;
 	char *pmem;
@@ -360,12 +360,12 @@ plsql_timer_handler (HWND hwnd,	int msg, int id, DWORD time)
 static int
 plsql_SetTimer (lua_State *L)
 {
-	const int elapse = luaL_checkinteger(L, 1);
+	const int elapse = luaL_checkint(L, 1);
 	int id;
 
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 
-	id = SetTimer(NULL, 0, elapse, (TIMERPROC) plsql_timer_handler);
+	id = (int) SetTimer(NULL, 0, elapse, (TIMERPROC) plsql_timer_handler);
 	if (id) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_PlugIn.ref_timers);
 		lua_pushvalue(L, 2);  /* callback function */
@@ -384,7 +384,7 @@ plsql_SetTimer (lua_State *L)
 static int
 plsql_KillTimer (lua_State *L)
 {
-	const int id = luaL_checkinteger(L, 1);
+	const int id = luaL_checkint(L, 1);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_PlugIn.ref_timers);
 	lua_pushnil(L);

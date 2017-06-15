@@ -93,7 +93,7 @@ plsql_sql_Field (lua_State *L)
 	SQL_Field func = (SQL_Field) PLSQL_FUNC[44];
 
 	if (func) {
-		const int field = luaL_checkinteger(L, 1) - 1;
+		const int field = luaL_checkint(L, 1) - 1;
 
 		lua_pushstring(L, func(field));
 		return 1;
@@ -111,7 +111,7 @@ plsql_sql_FieldName (lua_State *L)
 	SQL_FieldName func = (SQL_FieldName) PLSQL_FUNC[45];
 
 	if (func) {
-		const int field = luaL_checkinteger(L, 1) - 1;
+		const int field = luaL_checkint(L, 1) - 1;
 
 		lua_pushstring(L, func(field));
 		return 1;
@@ -147,7 +147,7 @@ plsql_sql_FieldType (lua_State *L)
 	SQL_FieldType func = (SQL_FieldType) PLSQL_FUNC[47];
 
 	if (func) {
-		const int field = luaL_checkinteger(L, 1) - 1;
+		const int field = luaL_checkint(L, 1) - 1;
 
 		lua_pushinteger(L, func(field));
 		return 1;

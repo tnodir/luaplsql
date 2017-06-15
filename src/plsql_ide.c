@@ -191,7 +191,7 @@ plsql_ide_MenuState (lua_State *L)
 	IDE_MenuState func = (IDE_MenuState) PLSQL_FUNC[10];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const int enabled = lua_toboolean(L, 2);
 
 		func(g_PlugInId, PLSQL_MENU[i], enabled);
@@ -277,7 +277,7 @@ plsql_ide_GetAppHandle (lua_State *L)
 {
 	IDE_GetAppHandle func = (IDE_GetAppHandle) PLSQL_FUNC[15];
 
-	lua_pushinteger(L, (int) func());
+	lua_pushinteger(L, (lua_Integer) func());
 	return 1;
 }
 
@@ -302,7 +302,7 @@ GetWindowHandle (void)
 static int
 plsql_ide_GetWindowHandle (lua_State *L)
 {
-	lua_pushinteger(L, (int) GetWindowHandle());
+	lua_pushinteger(L, (lua_Integer) GetWindowHandle());
 	return 1;
 }
 
@@ -314,7 +314,7 @@ plsql_ide_GetClientHandle (lua_State *L)
 {
 	IDE_GetClientHandle func = (IDE_GetClientHandle) PLSQL_FUNC[17];
 
-	lua_pushinteger(L, (int) func());
+	lua_pushinteger(L, (lua_Integer) func());
 	return 1;
 }
 
@@ -326,7 +326,7 @@ plsql_ide_GetChildHandle (lua_State *L)
 {
 	IDE_GetChildHandle func = (IDE_GetChildHandle) PLSQL_FUNC[18];
 
-	lua_pushinteger(L, (int) func());
+	lua_pushinteger(L, (lua_Integer) func());
 	return 1;
 }
 
@@ -352,7 +352,7 @@ plsql_ide_CreateWindow (lua_State *L)
 	IDE_CreateWindow func = (IDE_CreateWindow) PLSQL_FUNC[20];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 		const char *text = luaL_checkstring(L, 2);
 		const int exec = lua_toboolean(L, 3);
 
@@ -371,7 +371,7 @@ plsql_ide_OpenFile (lua_State *L)
 	IDE_OpenFile func = (IDE_OpenFile) PLSQL_FUNC[21];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 		const char *path = luaL_checkstring(L, 2);
 
 		lua_pushboolean(L, func(wt, path));
@@ -424,7 +424,7 @@ plsql_ide_CloseFile (lua_State *L)
 		const int old = g_WindowCloseAction;
 
 		if (lua_gettop(L))
-			g_WindowCloseAction = lua_tointeger(L, 1);
+			g_WindowCloseAction = (int) lua_tointeger(L, 1);
 		func();
 		g_WindowCloseAction = old;
 	}
@@ -566,7 +566,7 @@ plsql_ide_GetEditorHandle (lua_State *L)
 {
 	IDE_GetEditorHandle func = (IDE_GetEditorHandle) PLSQL_FUNC[33];
 
-	lua_pushinteger(L, (int) func());
+	lua_pushinteger(L, (lua_Integer) func());
 	return 1;
 }
 
@@ -616,8 +616,8 @@ plsql_ide_SetErrorPosition (lua_State *L)
 	IDE_SetErrorPosition func = (IDE_SetErrorPosition) PLSQL_FUNC[36];
 
 	if (func) {
-		const int line = luaL_checkinteger(L, 1);
-		const int col = luaL_checkinteger(L, 2);
+		const int line = luaL_checkint(L, 1);
+		const int col = luaL_checkint(L, 2);
 
 		lua_pushboolean(L, func(line, col));
 		return 1;
@@ -663,7 +663,7 @@ plsql_ide_Perform (lua_State *L)
 	IDE_Perform func = (IDE_Perform) PLSQL_FUNC[39];
 
 	if (func) {
-		const int param = luaL_checkinteger(L, 1);
+		const int param = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(param));
 		return 1;
@@ -711,7 +711,7 @@ plsql_ide_SetKeywords (lua_State *L)
 	IDE_SetKeywords func = (IDE_SetKeywords) PLSQL_FUNC[62];
 
 	if (func) {
-		const int style = luaL_checkinteger(L, 1);
+		const int style = luaL_checkint(L, 1);
 		const char *s = luaL_checkstring(L, 2);
 
 		func(g_PlugInId, style, s);
@@ -760,7 +760,7 @@ plsql_ide_SetMenuName (lua_State *L)
 	IDE_SetMenuName func = (IDE_SetMenuName) PLSQL_FUNC[65];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const char *name = luaL_checkstring(L, 2);
 
 		func(g_PlugInId, PLSQL_MENU[i], name);
@@ -777,7 +777,7 @@ plsql_ide_SetMenuCheck (lua_State *L)
 	IDE_SetMenuCheck func = (IDE_SetMenuCheck) PLSQL_FUNC[66];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const int checked = lua_toboolean(L, 2);
 
 		func(g_PlugInId, PLSQL_MENU[i], checked);
@@ -794,7 +794,7 @@ plsql_ide_SetMenuVisible (lua_State *L)
 	IDE_SetMenuVisible func = (IDE_SetMenuVisible) PLSQL_FUNC[67];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const int visible = lua_toboolean(L, 2);
 
 		func(g_PlugInId, PLSQL_MENU[i], visible);
@@ -826,7 +826,7 @@ plsql_ide_CreatePopupItem (lua_State *L)
 	IDE_CreatePopupItem func = (IDE_CreatePopupItem) PLSQL_FUNC[69];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const char *name = luaL_checkstring(L, 2);
 		const char *type = luaL_checkstring(L, 3);
 
@@ -961,7 +961,7 @@ plsql_ide_RefreshObject (lua_State *L)
 		const char *type = luaL_checkstring(L, 1);
 		const char *owner = luaL_checkstring(L, 2);
 		const char *name = luaL_checkstring(L, 3);
-		const int action = luaL_checkinteger(L, 4);
+		const int action = luaL_checkint(L, 4);
 
 		func(type, owner, name, action);
 	}
@@ -1057,7 +1057,7 @@ plsql_ide_SelectWindow (lua_State *L)
 	IDE_SelectWindow func = (IDE_SelectWindow) PLSQL_FUNC[81];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(i));
 		return 1;
@@ -1075,7 +1075,7 @@ plsql_ide_ActivateWindow (lua_State *L)
 	IDE_ActivateWindow func = (IDE_ActivateWindow) PLSQL_FUNC[82];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(i));
 		return 1;
@@ -1141,7 +1141,7 @@ plsql_ide_SplashCreate (lua_State *L)
 	IDE_SplashCreate func = (IDE_SplashCreate) PLSQL_FUNC[90];
 
 	if (func) {
-		const int max = luaL_checkinteger(L, 1);
+		const int max = luaL_checkint(L, 1);
 
 		func(max);
 	}
@@ -1202,7 +1202,7 @@ plsql_ide_SplashProgress (lua_State *L)
 	IDE_SplashProgress func = (IDE_SplashProgress) PLSQL_FUNC[94];
 
 	if (func) {
-		const int num = luaL_checkinteger(L, 1);
+		const int num = luaL_checkint(L, 1);
 
 		func(num);
 	}
@@ -1288,7 +1288,7 @@ plsql_ide_GetFileOpenMenu (lua_State *L)
 	IDE_GetFileOpenMenu func = (IDE_GetFileOpenMenu) PLSQL_FUNC[100];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		int wt;
 
 		lua_pushstring(L, func(i, &wt));
@@ -1323,7 +1323,7 @@ plsql_ide_OpenFileExternal (lua_State *L)
 	IDE_OpenFileExternal func = (IDE_OpenFileExternal) PLSQL_FUNC[102];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 		const char *data = luaL_checkstring(L, 2);
 		const char *fs = luaL_checkstring(L, 3);
 		const char *tag = luaL_checkstring(L, 4);
@@ -1344,7 +1344,7 @@ plsql_ide_GetFileTypes (lua_State *L)
 	IDE_GetFileTypes func = (IDE_GetFileTypes) PLSQL_FUNC[103];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 
 		lua_pushstring(L, func(wt));
 		return 1;
@@ -1362,7 +1362,7 @@ plsql_ide_GetDefaultExtension (lua_State *L)
 	IDE_GetDefaultExtension func = (IDE_GetDefaultExtension) PLSQL_FUNC[104];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 
 		lua_pushstring(L, func(wt));
 		return 1;
@@ -1540,8 +1540,8 @@ plsql_ide_KeyPress (lua_State *L)
 	IDE_KeyPress func = (IDE_KeyPress) PLSQL_FUNC[120];
 
 	if (func) {
-		const int key = luaL_checkinteger(L, 1);
-		const int shift = lua_tointeger(L, 2);
+		const int key = luaL_checkint(L, 1);
+		const int shift = (int) lua_tointeger(L, 2);
 
 		func(key, shift);
 	}
@@ -1576,7 +1576,7 @@ plsql_ide_SelectMenu (lua_State *L)
 	IDE_SelectMenu func = (IDE_SelectMenu) PLSQL_FUNC[122];
 
 	if (func) {
-		const int menu = luaL_checkinteger(L, 1);
+		const int menu = luaL_checkint(L, 1);
 
 		lua_pushinteger(L, func(menu));
 		return 1;
@@ -1737,8 +1737,8 @@ plsql_ide_SetCursor (lua_State *L)
 	IDE_SetCursor func = (IDE_SetCursor) PLSQL_FUNC[143];
 
 	if (func) {
-		const int x = luaL_checkinteger(L, 1);
-		const int y = luaL_checkinteger(L, 2);
+		const int x = luaL_checkint(L, 1);
+		const int y = luaL_checkint(L, 2);
 
 		func(x, y);
 	}
@@ -1755,9 +1755,9 @@ plsql_ide_SetBookmark (lua_State *L)
 	IDE_SetBookmark func = (IDE_SetBookmark) PLSQL_FUNC[144];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
-		const int x = luaL_checkinteger(L, 2);
-		const int y = luaL_checkinteger(L, 3);
+		const int i = luaL_checkint(L, 1);
+		const int x = luaL_checkint(L, 2);
+		const int y = luaL_checkint(L, 3);
 
 		lua_pushinteger(L, func(i, x, y));
 		return 1;
@@ -1774,7 +1774,7 @@ plsql_ide_ClearBookmark (lua_State *L)
 	IDE_ClearBookmark func = (IDE_ClearBookmark) PLSQL_FUNC[145];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		func(i);
 	}
@@ -1790,7 +1790,7 @@ plsql_ide_GotoBookmark (lua_State *L)
 	IDE_GotoBookmark func = (IDE_GotoBookmark) PLSQL_FUNC[146];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		func(i);
 	}
@@ -1807,7 +1807,7 @@ plsql_ide_GetBookmark (lua_State *L)
 	IDE_GetBookmark func = (IDE_GetBookmark) PLSQL_FUNC[147];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		int x, y;
 
 		if (func(i, &x, &y)) {
@@ -1829,7 +1829,7 @@ plsql_ide_TabInfo (lua_State *L)
 	IDE_TabInfo func = (IDE_TabInfo) PLSQL_FUNC[148];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		lua_pushstring(L, func(i));
 		return 1;
@@ -1847,7 +1847,7 @@ plsql_ide_TabIndex (lua_State *L)
 	IDE_TabIndex func = (IDE_TabIndex) PLSQL_FUNC[149];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 
 		lua_pushinteger(L, func(i));
 		return 1;
@@ -1864,7 +1864,7 @@ plsql_ide_CreateToolButton (lua_State *L)
 	IDE_CreateToolButton func = (IDE_CreateToolButton) PLSQL_FUNC[150];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		const char *name = luaL_checkstring(L, 2);
 		const char *path = luaL_checkstring(L, 3);
 
@@ -2043,7 +2043,7 @@ plsql_ide_GetBrowserFilter (lua_State *L)
 	IDE_GetBrowserFilter func = (IDE_GetBrowserFilter) PLSQL_FUNC[176];
 
 	if (func) {
-		const int i = luaL_checkinteger(L, 1);
+		const int i = luaL_checkint(L, 1);
 		char *name, *where, *order, *user;
 		int active;
 
@@ -2067,7 +2067,7 @@ plsql_ide_CommandFeedback (lua_State *L)
 	IDE_CommandFeedback func = (IDE_CommandFeedback) PLSQL_FUNC[180];
 
 	if (func) {
-		const int feedback = luaL_checkinteger(L, 1);
+		const int feedback = luaL_checkint(L, 1);
 		const char *text = luaL_checkstring(L, 2);
 
 		func(feedback, text);
@@ -2115,8 +2115,8 @@ plsql_ide_ResultGridCell (lua_State *L)
 	IDE_ResultGridCell func = (IDE_ResultGridCell) PLSQL_FUNC[192];
 
 	if (func) {
-		const int col = luaL_checkinteger(L, 1);
-		const int row = luaL_checkinteger(L, 2);
+		const int col = luaL_checkint(L, 1);
+		const int row = luaL_checkint(L, 2);
 
 		lua_pushstring(L, func(col, row));
 		return 1;
@@ -2154,7 +2154,7 @@ plsql_ide_WindowAllowed (lua_State *L)
 	IDE_WindowAllowed func = (IDE_WindowAllowed) PLSQL_FUNC[201];
 
 	if (func) {
-		const int wt = luaL_checkinteger(L, 1);
+		const int wt = luaL_checkint(L, 1);
 		const int err = lua_toboolean(L, 2);
 
 		lua_pushboolean(L, func(wt, err));
@@ -2334,7 +2334,7 @@ plsql_ide_SetPrefAsInteger (lua_State *L)
 	if (func) {
 		const char *pref = luaL_checkstring(L, 1);
 		const char *name = luaL_checkstring(L, 2);
-		const int val = luaL_checkinteger(L, 3);
+		const int val = luaL_checkint(L, 3);
 
 		lua_pushboolean(L, func(g_PlugInId, pref, name, val));
 		return 1;
@@ -2488,7 +2488,7 @@ plsql_ide_GetConnectionInfoEx (lua_State *L)
 	IDE_GetConnectionInfoEx10 func10 = (IDE_GetConnectionInfoEx10) PLSQL_FUNC[250];
 
 	if (func10 || func) {
-		const int ix = luaL_checkinteger(L, 1);
+		const int ix = luaL_checkint(L, 1);
 		char *usr, *pwd, *db, *role;
 		char *edt = NULL, *wspc = NULL;
 
@@ -2573,7 +2573,7 @@ plsql_ide_ConnectConnection (lua_State *L)
 	IDE_ConnectConnection func = (IDE_ConnectConnection) PLSQL_FUNC[243];
 
 	if (func) {
-		const int ix = luaL_checkinteger(L, 1);
+		const int ix = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(ix));
 		return 1;
@@ -2591,7 +2591,7 @@ plsql_ide_SetMainConnection (lua_State *L)
 	IDE_SetMainConnection func = (IDE_SetMainConnection) PLSQL_FUNC[244];
 
 	if (func) {
-		const int ix = luaL_checkinteger(L, 1);
+		const int ix = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(ix));
 		return 1;
@@ -2624,7 +2624,7 @@ plsql_ide_SetWindowConnection (lua_State *L)
 	IDE_SetWindowConnection func = (IDE_SetWindowConnection) PLSQL_FUNC[246];
 
 	if (func) {
-		const int ix = luaL_checkinteger(L, 1);
+		const int ix = luaL_checkint(L, 1);
 
 		lua_pushboolean(L, func(ix));
 		return 1;
@@ -2646,7 +2646,7 @@ plsql_ide_GetConnectionTree (lua_State *L)
 	IDE_GetConnectionTreeEx10 func10 = (IDE_GetConnectionTreeEx10) PLSQL_FUNC[253];
 
 	if (func10 || func) {
-		const int ix = luaL_checkinteger(L, 1);
+		const int ix = luaL_checkint(L, 1);
 		char *descr, *usr, *pwd, *db, *role;
 		char *edt = NULL, *wspc = NULL;
 		int id, pid;
@@ -2675,7 +2675,7 @@ plsql_ide_GetConnectionTree (lua_State *L)
 static int
 plsql_ide_SetWindowCloseAction (lua_State *L)
 {
-	g_WindowCloseAction = luaL_checkinteger(L, 1);
+	g_WindowCloseAction = luaL_checkint(L, 1);
 	return 0;
 }
 
@@ -2733,8 +2733,8 @@ static int
 plsql_ide_SetSelection (lua_State *L)
 {
 	const HWND hwnd = ((IDE_GetEditorHandle) PLSQL_FUNC[33])();
-	const int start = lua_tointeger(L, 1);
-	const int end = lua_tointeger(L, 2);
+	const int start = (int) lua_tointeger(L, 1);
+	const int end = (int) lua_tointeger(L, 2);
 	CHARRANGE range;
 
 	range.cpMin = start;
@@ -2767,7 +2767,7 @@ static int
 plsql_ide_LineFromChar (lua_State *L)
 {
 	const HWND hwnd = ((IDE_GetEditorHandle) PLSQL_FUNC[33])();
-	const int pos = lua_tointeger(L, 1);
+	const int pos = (int) lua_tointeger(L, 1);
 
 	lua_pushinteger(L, SendMessage(hwnd, EM_EXLINEFROMCHAR, 0, pos));
 	return 1;
@@ -2781,7 +2781,7 @@ static int
 plsql_ide_LineIndex (lua_State *L)
 {
 	const HWND hwnd = ((IDE_GetEditorHandle) PLSQL_FUNC[33])();
-	const int line = lua_tointeger(L, 1);
+	const int line = (int) lua_tointeger(L, 1);
 
 	lua_pushinteger(L, SendMessage(hwnd, EM_LINEINDEX, line, 0));
 	return 1;
@@ -2795,7 +2795,7 @@ static int
 plsql_ide_LineLength (lua_State *L)
 {
 	const HWND hwnd = ((IDE_GetEditorHandle) PLSQL_FUNC[33])();
-	const int pos = lua_tointeger(L, 1);
+	const int pos = (int) lua_tointeger(L, 1);
 
 	lua_pushinteger(L, SendMessage(hwnd, EM_LINELENGTH, pos, 0));
 	return 1;
@@ -2809,8 +2809,8 @@ static int
 plsql_ide_LineScroll (lua_State *L)
 {
 	const HWND hwnd = ((IDE_GetEditorHandle) PLSQL_FUNC[33])();
-	const int x_off = lua_tointeger(L, 1);
-	const int y_off = lua_tointeger(L, 2);
+	const int x_off = (int) lua_tointeger(L, 1);
+	const int y_off = (int) lua_tointeger(L, 2);
 
 	SendMessage(hwnd, EM_LINESCROLL, x_off, y_off);
 	return 0;
