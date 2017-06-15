@@ -123,8 +123,8 @@ load_library (void)
 	vOnDestroy = (tOnDestroy) GetProcAddress(g_DLLHandle, "OnDestroy");
 	vRegisterCallback = (tRegisterCallback) GetProcAddress(g_DLLHandle, "RegisterCallback");
 	vOnActivate = (tOnActivate) GetProcAddress(g_DLLHandle, "OnActivate");
-	vOnDeactivate = (tOnDeactivate) GetProcAddress(g_DLLHandle,"OnDeactivate");
-	vCreateMenuItem = (tCreateMenuItem) GetProcAddress(g_DLLHandle,"CreateMenuItem");
+	vOnDeactivate = (tOnDeactivate) GetProcAddress(g_DLLHandle, "OnDeactivate");
+	vCreateMenuItem = (tCreateMenuItem) GetProcAddress(g_DLLHandle, "CreateMenuItem");
 	vOnMenuClick = (tOnMenuClick) GetProcAddress(g_DLLHandle, "OnMenuClick");
 	vCanClose = (tCanClose) GetProcAddress(g_DLLHandle, "CanClose");
 	vAfterStart = (tAfterStart) GetProcAddress(g_DLLHandle, "AfterStart");
