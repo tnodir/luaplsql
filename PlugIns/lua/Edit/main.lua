@@ -30,14 +30,14 @@ end
 
 -- Duplicate selected text
 do
-	local function ToSqlWindow()
+	local function Duplicate()
 		local text = IDE.GetSelectedText()
 
 		IDE.SetCursor(0, 0)
 		IDE.InsertText(text)
 	end
 
-	AddMenu(ToSqlWindow, "Lua / Edit / Selection / Duplicate")
+	AddMenu(Duplicate, "Lua / Edit / Selection / Duplicate")
 end
 
 -- Inverse Special Copy (Java, C++)
