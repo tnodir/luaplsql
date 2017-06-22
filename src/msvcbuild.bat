@@ -2,7 +2,7 @@
 
 @setlocal
 @set LUA=../../luajit-2.0
-@set LSCOMPILE=cl /nologo /c /LD /MD /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /I%LUA%/src
+@set LSCOMPILE=cl /nologo /c /LD /MD /O2 /W3 /DDEBUG=0 /D_CRT_SECURE_NO_DEPRECATE /I%LUA%/src
 @set LSLINK=link /nologo
 @set LSPLUG_FLAGS=/DYNAMICBASE:NO /FIXED:NO /NXCOMPAT:NO
 

@@ -137,6 +137,7 @@ static struct {
 static int push_traceback_addons (int nargs);
 
 
+#include "debug.c"
 #include "plsql_ide.c"
 #include "plsql_sql.c"
 #include "plsql_sys.c"
@@ -206,8 +207,9 @@ load_addons (void)
 	/* set available functions */
 	for (i = Func_Start + 1; i < Func_End; ++i) {
 		lua_rawgeti(g_L, PLUGIN_ADDONS_IDX, i * MAX_ADDONS);
-		if (lua_isfunction(g_L, -1))
+		if (lua_isfunction(g_L, -1)) {
 			g_PlugIn.cb_bits |= (1 << i);
+		}
 		lua_pop(g_L, 1);
 	}
 
