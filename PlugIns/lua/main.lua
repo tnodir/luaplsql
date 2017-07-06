@@ -214,8 +214,7 @@ do
 		local indexes, nindexes = {}, menu_nnames
 		local src, src_nindexes
 
-		-- Use Ribbon Menu with Pl/Sql Developer v12+
-		if SYS.Version() >= 1200 then
+		if IDE.UseRibbonMenu() then
 			ribbon_menu()
 			src, src_nindexes = menu_indexes, ribbon_nnames
 		else

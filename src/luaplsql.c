@@ -50,7 +50,11 @@
 
 #define MAX_FUNCTIONS	256  /* Pl/Sql Developer Functions */
 #define MAX_ADDONS	1000
-#define MAX_MENUS	99
+#define MAX_MENUS	97
+
+/* Default menus */
+#define PLUGIN_MENU_GROUP	98
+#define PLUGIN_MENU_RELOAD	99
 
 #define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, PLUGIN_DESCR, 0)
 
@@ -95,6 +99,7 @@ enum {
 static struct {
 	unsigned int is_active		: 1;  /* Is PlugIn activated? */
 	unsigned int win_close_action	: 3;  /* Default behaviour on window close */
+	unsigned int use_ribbon_menu	: 1;  /* Use Ribbon Menu with Pl/Sql Developer v12+ */
 
 	int id;  /* Plug-In Identifier */
 
@@ -116,6 +121,7 @@ static struct {
 
 #define g_IsActive		g_PlugIn.is_active
 #define g_WindowCloseAction	g_PlugIn.win_close_action
+#define g_UseRibbonMenu		g_PlugIn.use_ribbon_menu
 
 #define g_PlugInId		g_PlugIn.id
 
@@ -385,6 +391,7 @@ OnActivate (void)
 	const int cb = Func_OnActivate;
 
 	g_IsActive = 1;
+	g_UseRibbonMenu = (Version() >= 1200);
 
 	OnCreate();
 
@@ -426,6 +433,19 @@ CreateMenuItem (int i)
 	const int cb = Func_CreateMenuItem;
 	const char *s = NULL;
 
+	/* Plugin menus */
+	if (i > MAX_MENUS) {
+		if (g_UseRibbonMenu) {
+			if (i == PLUGIN_MENU_GROUP)
+				return "GROUP=Plug-In";
+			if (i == PLUGIN_MENU_RELOAD)
+				return "ITEM=Reload Plug-In";
+		} else {
+			if (i == PLUGIN_MENU_RELOAD)
+				return "Lua / Reload Plug-In";
+		}
+	}
+
 	if (i <= g_NMenus && callback_exists(cb)) {
 		lua_pushinteger(g_L, i);
 		call_addons(cb, 1, 1, CreateMenuItemArgs, (void *) &s);
@@ -433,10 +453,24 @@ CreateMenuItem (int i)
 	return s;
 }
 
+static void
+Reload (void)
+{
+	OnDeactivate();
+	OnActivate();
+	RegisterExport();
+}
+
 PLUGIN_API void
 OnMenuClick (int i)
 {
 	const int cb = Func_OnMenuClick;
+
+	/* Plugin menus */
+	if (i == PLUGIN_MENU_RELOAD) {
+		Reload();
+		return;
+	}
 
 	if (callback_exists(cb)) {
 		lua_pushinteger(g_L, i);

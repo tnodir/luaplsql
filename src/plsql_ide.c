@@ -2690,6 +2690,16 @@ plsql_ide_GetWindowCloseAction (lua_State *L)
 }
 
 /*
+ * Returns: boolean
+ */
+static int
+plsql_ide_UseRibbonMenu (lua_State *L)
+{
+	lua_pushboolean(L, g_UseRibbonMenu);
+	return 1;
+}
+
+/*
  * Arguments: text (string)
  */
 static int
@@ -2978,6 +2988,7 @@ static luaL_Reg plsql_idelib[] = {
     {"GetConnectionTree",	plsql_ide_GetConnectionTree},
     {"SetWindowCloseAction",	plsql_ide_SetWindowCloseAction},
     {"GetWindowCloseAction",	plsql_ide_GetWindowCloseAction},
+    {"UseRibbonMenu",		plsql_ide_UseRibbonMenu},
     {"InsertText",		plsql_ide_InsertText},
     {"GetFirstVisibleLine",	plsql_ide_GetFirstVisibleLine},
     {"GetLineCount",		plsql_ide_GetLineCount},
