@@ -46,7 +46,7 @@
 
 
 #define PLUGIN_DESCR	"Lua Plug-In"
-#define PLUGIN_VERSION	"1.6"
+#define PLUGIN_VERSION	"1.7"
 
 #define MAX_FUNCTIONS	256  /* Pl/Sql Developer Functions */
 #define MAX_ADDONS	1000
