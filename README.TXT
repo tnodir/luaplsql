@@ -33,6 +33,9 @@ Useful modules:
 - LPeg: http://www.inf.puc-rio.br/~roberto/lpeg.html
 
 
+lua5.1.dll for LuaJIT and IUP: https://github.com/tnodir/luajit-windows/
+
+
 Thanks to:
 
 - Alexey Matveev
