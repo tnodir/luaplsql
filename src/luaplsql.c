@@ -53,7 +53,7 @@
 #define MAX_MENUS	96
 
 /* Default menus */
-#define PLUGIN_MENU_TAB         97
+#define PLUGIN_MENU_TAB		97
 #define PLUGIN_MENU_GROUP	98
 #define PLUGIN_MENU_RELOAD	99
 
@@ -438,7 +438,7 @@ CreateMenuItem (int i)
 	if (i > MAX_MENUS) {
 		if (g_UseRibbonMenu) {
 			if (i == PLUGIN_MENU_TAB)
-        			return "TAB=Lua";
+				return "TAB=Lua";
 			if (i == PLUGIN_MENU_GROUP)
 				return "GROUP=Plug-In";
 			if (i == PLUGIN_MENU_RELOAD)
