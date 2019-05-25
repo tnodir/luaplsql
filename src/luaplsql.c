@@ -392,7 +392,6 @@ OnActivate (void)
 	const int cb = Func_OnActivate;
 
 	g_IsActive = 1;
-	g_UseRibbonMenu = (Version() >= 1200);
 
 	OnCreate();
 
@@ -435,22 +434,25 @@ CreateMenuItem (int i)
 	const int cb = Func_CreateMenuItem;
 	const char *s = NULL;
 
-	/* Plugin menus */
-	if (i > MAX_MENUS) {
-		if (g_UseRibbonMenu) {
-			if (i == PLUGIN_MENU_TAB)
-				return "TAB=Lua";
-			if (i == PLUGIN_MENU_GROUP)
-				return "GROUP=Plug-In";
-			if (i == PLUGIN_MENU_RELOAD)
-				return "ITEM=Reload Plug-In";
-		} else {
-			if (i == PLUGIN_MENU_RELOAD)
-				return "Lua / Reload Plug-In";
-		}
+	if (i == 1) {
+		g_UseRibbonMenu = (Version() >= 1200);
 	}
 
-	if (i <= g_NMenus && callback_exists(cb)) {
+	if (i > MAX_MENUS) {
+		/* Plugin menus */
+		if (g_UseRibbonMenu) {
+			if (i == PLUGIN_MENU_TAB)
+				s = "TAB=Lua";
+			else if (i == PLUGIN_MENU_GROUP)
+				s = "GROUP=Plug-In";
+			else if (i == PLUGIN_MENU_RELOAD)
+				s = "ITEM=Reload Plug-In";
+		} else {
+			if (i == PLUGIN_MENU_RELOAD)
+				s = "Lua / Reload Plug-In";
+		}
+	}
+	else if (i <= g_NMenus && callback_exists(cb)) {
 		lua_pushinteger(g_L, i);
 		call_addons(cb, 1, 1, CreateMenuItemArgs, (void *) &s);
 	}
