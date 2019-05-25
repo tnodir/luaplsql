@@ -7,6 +7,18 @@
  * Arguments: message (string)
  */
 static int
+plsql_Log (lua_State *L)
+{
+	const char *msg = lua_tostring(L, 1);
+
+	LOG(msg);
+	return 0;
+}
+
+/*
+ * Arguments: message (string)
+ */
+static int
 plsql_ShowMessage (lua_State *L)
 {
 	const char *msg = lua_tostring(L, 1);
@@ -396,6 +408,7 @@ plsql_KillTimer (lua_State *L)
 
 
 static luaL_Reg plsqllib[] = {
+    {"Log",			plsql_Log},
     {"ShowMessage",		plsql_ShowMessage},
     {"FlashWindow",		plsql_FlashWindow},
     {"SetForegroundWindow",	plsql_SetForegroundWindow},

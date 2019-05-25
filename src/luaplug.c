@@ -80,16 +80,21 @@ static tExportData			vExportData;
 static HINSTANCE g_DLLHandle;
 
 
+#include "debug.c"
+
+
 BOOL WINAPI
 DllMain (HANDLE hmodule, DWORD reason, LPVOID reserved)
 {
 	if (reason == DLL_PROCESS_ATTACH) {
-		char env[16384];
 		char path[2 * MAX_PATH];
 		int n = GetModuleFileName(hmodule, &path[1], MAX_PATH);
 		char *sep;
 
-		if (!n) return FALSE;
+		if (!n) {
+			LOG("DllMain: GetModuleFileName() failed: 0x%x", GetLastError());
+			return FALSE;
+		}
 
 		path[0] = ';';
 		path[++n] = '\0';
@@ -115,7 +120,10 @@ load_library (void)
 	if (g_DLLHandle) return;
 
 	g_DLLHandle = LoadLibrary(PLUGIN_DLL_NAME);
-	if (!g_DLLHandle) return;
+	if (!g_DLLHandle) {
+		LOG("load_library: LoadLibrary() failed: 0x%x", GetLastError());
+		return;
+	}
 
 	vPlugInShortName = (tPlugInShortName) GetProcAddress(g_DLLHandle, "PlugInShortName");
 	vIdentifyPlugIn = (tIdentifyPlugIn) GetProcAddress(g_DLLHandle, "IdentifyPlugIn");
