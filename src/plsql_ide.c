@@ -284,7 +284,7 @@ plsql_ide_GetAppHandle (lua_State *L)
 static HWND
 GetWindowHandle (void)
 {
-	static HWND g_WindowHandle = NULL;  // Pl/Sql Developer Window Handle
+	static HWND g_WindowHandle = NULL;  /* Pl/Sql Developer Window Handle */
 
 	if (!g_WindowHandle) {
 		IDE_GetWindowHandle func = (IDE_GetWindowHandle) PLSQL_FUNC[16];

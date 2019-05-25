@@ -186,7 +186,7 @@ load_addons (void)
 {
 	int i;
 
-	// load main lua file
+	/* load main lua file */
 	{
 		char path[2 * MAX_PATH];
 
@@ -396,14 +396,15 @@ OnActivate (void)
 
 	OnCreate();
 
-	RefreshMenus();  // add menus
+	RefreshMenus();  /* add menus */
 
 	if (callback_exists(cb)) {
 		call_addons(cb, 0, 0, NULL, NULL);
 	}
 
-	if (g_ActivateCount++)
+	if (g_ActivateCount++) {
 		AfterReload();
+	}
 }
 
 PLUGIN_API void
@@ -419,7 +420,7 @@ OnDeactivate (void)
 
 	g_IsActive = 0;
 
-	RefreshMenus();  // remove menus
+	RefreshMenus();  /* remove menus */
 }
 
 static void

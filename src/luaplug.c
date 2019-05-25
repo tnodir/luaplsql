@@ -99,10 +99,12 @@ DllMain (HANDLE hmodule, DWORD reason, LPVOID reserved)
 		path[0] = ';';
 		path[++n] = '\0';
 		sep = strrchr(path, '\\');
-		if (sep)
+		if (sep) {
 			*sep = '\0';
-		else
+		} else {
 			sep = &path[n];
+		}
+
 		strcat(sep, "\\lua");
 		SetEnvironmentVariable(PLUGIN_ENV, &path[1]);
 

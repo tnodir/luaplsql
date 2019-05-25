@@ -10,7 +10,7 @@ typedef char *(*SYS_TNSNAMES)(const char *Param);
 static int
 Version (void)
 {
-	static int g_Version = 0;  // Pl/Sql Developer Version
+	static int g_Version = 0;  /* Pl/Sql Developer Version */
 
 	if (!g_Version) {
 		SYS_Version func = (SYS_Version) PLSQL_FUNC[1];
