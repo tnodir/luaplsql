@@ -235,7 +235,7 @@ do
 	end
 
 	OnMenuClick = function(index)
-		if is_ribbon then
+		if is_ribbon and menu_indexes[index] then
 			index = ribbon_indexes[index]
 		end
 
