@@ -265,7 +265,7 @@ static int
 plsql_RootPath (lua_State *L)
 {
 	char path[MAX_PATH];
-	const int n = GetEnvironmentVariable(PLUGIN_ENV, path, sizeof(path));
+	const int n = GetEnvironmentVariable(PLUGIN_ENV_ROOT, path, sizeof(path));
 
 	lua_pushlstring(L, path, n);
 	return 1;

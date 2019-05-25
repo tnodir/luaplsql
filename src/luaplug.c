@@ -106,12 +106,17 @@ DllMain (HANDLE hmodule, DWORD reason, LPVOID reserved)
 		}
 
 		strcat(sep, "\\lua");
-		SetEnvironmentVariable(PLUGIN_ENV, &path[1]);
+		SetEnvironmentVariable(PLUGIN_ENV_ROOT, &path[1]);
 
-		GetEnvironmentVariable("PATH", env, sizeof(env));
 		strcat(sep, "\\clibs");
-		strcat(env, path);
-		SetEnvironmentVariable("PATH", env);
+
+		/* Append clibs to PATH */
+		{
+			char env[32768];
+			const int n = GetEnvironmentVariable("PATH", env, sizeof(env));
+			strcat(env + n, path);
+			SetEnvironmentVariable("PATH", env);
+		}
 	}
 	return TRUE;
 }

@@ -189,9 +189,9 @@ load_addons (void)
 	/* load main lua file */
 	{
 		char path[2 * MAX_PATH];
+		const int n = GetEnvironmentVariable(PLUGIN_ENV_ROOT, path, sizeof(path));
 
-		GetEnvironmentVariable(PLUGIN_ENV, path, sizeof(path));
-		strcat(path, "\\main.lua");
+		strcat(path + n, "\\main.lua");
 		if (luaL_loadfile(g_L, path))
 			return 0;
 	}

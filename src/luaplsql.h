@@ -1,7 +1,7 @@
 #ifndef LUAPLSQL_H
 #define LUAPLSQL_H
 
-#define PLUGIN_ENV	"LUAPLSQL_PATH"
+#define PLUGIN_ENV_ROOT		"LUAPLSQL_ROOT"
 
 #define PLUGIN_API	__declspec(dllexport)
 
