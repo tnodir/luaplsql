@@ -64,7 +64,9 @@ do
 		end
 	end
 
-	AddMenu(ToggleFullscreen, "Lua / Window / Fullscreen")
+	if SYS.Version() < 1200 then
+		AddMenu(ToggleFullscreen, "Lua / Window / Fullscreen")
+	end
 end
 
 
