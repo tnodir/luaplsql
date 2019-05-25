@@ -11,6 +11,7 @@
 #include <lauxlib.h>
 
 #include "luaplsql.h"
+#include "version.h"
 
 
 #if LUA_VERSION_NUM < 502
@@ -45,9 +46,6 @@
 #endif
 
 
-#define PLUGIN_DESCR	"Lua Plug-In"
-#define PLUGIN_VERSION	"1.7"
-
 #define MAX_FUNCTIONS	256  /* Pl/Sql Developer Functions */
 #define MAX_ADDONS	1000
 #define MAX_MENUS	96
@@ -57,7 +55,7 @@
 #define PLUGIN_MENU_GROUP	98
 #define PLUGIN_MENU_RELOAD	99
 
-#define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, PLUGIN_DESCR, 0)
+#define ShowMessage(msg)	MessageBox(GetWindowHandle(), msg, APP_NAME, 0)
 
 /* Addon callback functions */
 enum {
@@ -298,7 +296,7 @@ PLUGIN_API char *
 IdentifyPlugIn (int id)
 {
 	g_PlugInId = id;
-	return PLUGIN_DESCR;
+	return APP_NAME;
 }
 
 /*
@@ -693,7 +691,7 @@ AboutArgs (const char **data)
 		return;
 
 	if (!*data)
-		lua_pushliteral(g_L, "Lua Addons v" PLUGIN_VERSION ":");
+		lua_pushliteral(g_L, "Lua Addons v" APP_VERSION_STR ":");
 	else
 		lua_rawgeti(g_L, LUA_REGISTRYINDEX, g_PlugIn.ref_about);
 
