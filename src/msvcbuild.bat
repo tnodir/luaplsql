@@ -1,23 +1,23 @@
 @rem Open "Visual Studio .NET Command Prompt" to run this script
 
 @setlocal
-@set LUA=../../luajit-2.0
+@set LUA=../../luajit-2.0/src
 @set LSRC=rc
-@set LSCOMPILE=cl /nologo /c /LD /MD /O2 /W3 /DDEBUG=0 /D_CRT_SECURE_NO_DEPRECATE /I%LUA%/src
+@set LSCOMPILE=cl /nologo /c /LD /MD /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /DDEBUG=0
 @set LSLINK=link /nologo
 @set LSPLUG_FLAGS=/DYNAMICBASE:NO /FIXED:NO /NXCOMPAT:NO
 
 %LSRC% luaplsql.rc
 @if errorlevel 1 goto :END
 
-%LSCOMPILE% /DLUA_BUILD_AS_DLL luaplug.c
+%LSCOMPILE% luaplug.c
 @if errorlevel 1 goto :END
-%LSLINK% %LSPLUG_FLAGS% /DLL /OUT:luaplug.dll luaplug.obj *.res %LUA%/src/lua*.lib kernel32.lib user32.lib
+%LSLINK% %LSPLUG_FLAGS% /DLL /OUT:luaplug.dll luaplug.obj *.res kernel32.lib user32.lib
 @if errorlevel 1 goto :END
 
-%LSCOMPILE% /DLUA_BUILD_AS_DLL luaplsql.c
+%LSCOMPILE% /I%LUA% /DLUA_BUILD_AS_DLL luaplsql.c
 @if errorlevel 1 goto :END
-%LSLINK% /DLL /OUT:luaplsql.dll luaplsql.obj *.res %LUA%/src/lua*.lib kernel32.lib user32.lib comdlg32.lib
+%LSLINK% /DLL /OUT:luaplsql.dll luaplsql.obj *.res %LUA%/lua51.lib kernel32.lib user32.lib comdlg32.lib
 @if errorlevel 1 goto :END
 
 @del *.obj *.manifest *.lib *.exp *.res
