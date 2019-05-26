@@ -29,10 +29,9 @@ PL/SQL Developer: http://www.allroundautomations.com/plsqldev.html
 
 ## Useful modules:
 
-- IUP: http://luaforge.net/projects/iup/
-- LPeg: http://www.inf.puc-rio.br/~roberto/lpeg.html
-
-lua5.1.dll for LuaJIT and IUP: https://github.com/tnodir/luajit-windows/
+- IUP (http://luaforge.net/projects/iup/)
+- LPeg (http://www.inf.puc-rio.br/~roberto/lpeg.html)
+- lua5.1.dll for LuaJIT and IUP (https://github.com/tnodir/luajit-windows/)
 
 ## Thanks to:
 
