@@ -1,8 +1,8 @@
-# Lua Pl/Sql Developer Plug-In
+# Lua PL/SQL Developer Plug-In
 
 [![Release](https://img.shields.io/github/release/tnodir/luaplsql.svg)](https://github.com/tnodir/luaplsql/releases/latest) [![Downloads](https://img.shields.io/github/downloads/tnodir/luaplsql/total.svg?maxAge=86400)](https://github.com/tnodir/luaplsql/releases) [![License](https://img.shields.io/github/license/tnodir/luaplsql.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-LuaPlSql is a Lua Plug-In framework for Pl/Sql Developer IDE.
+LuaPlSql is a Lua Plug-In framework for PL/SQL Developer IDE.
 
 You can program your own Addons for Lua Plug-In to extend the functionality of PL/SQL Developer.
 
@@ -10,7 +10,7 @@ Functions in an Addon can be added to the PL/SQL Developer menu,
 and can perform any kind of action: access the database, the Object Browser,
 the current window and editor and so on.
 
-Pl/Sql Developer: http://www.allroundautomations.com/plsqldev.html
+PL/SQL Developer: http://www.allroundautomations.com/plsqldev.html
 
 ## Building:
 
