@@ -139,6 +139,16 @@ do
 
 		local GMatch, GSub, SSub = string.gmatch, string.gsub, string.sub
 
+		function add_ribbon(menu_index, name)
+			ribbon_nnames = ribbon_nnames + 1
+			ribbon_names[ribbon_nnames] = name
+
+			if menu_index then
+				ribbon_indexes[ribbon_nnames] = menu_index
+				menu_indexes[menu_index] = ribbon_nnames
+			end
+		end
+
 		function build_tree(index, name)
 			local t = tabs
 			for s in GMatch(name, "%s*([^/]+)%s*/?") do
@@ -183,16 +193,10 @@ do
 					opt = ""
 				end
 
-				ribbon_nnames = ribbon_nnames + 1
-
 				local ribbon_name = level .. "=" .. name .. opt
-				ribbon_names[ribbon_nnames] = ribbon_name
+				local menu_index = sub[0]
 
-				local index = sub[0]  -- menu_index
-				if index then
-					ribbon_indexes[ribbon_nnames] = index
-					menu_indexes[index] = ribbon_nnames
-				end
+				add_ribbon(menu_index, ribbon_name)
 
 				build_names(sub, depth + 1)
 			end
@@ -203,6 +207,8 @@ do
 			local name = menu_names[i]
 			if name then
 				build_tree(i, name)
+			else
+				add_ribbon(i)
 			end
 		end
 
@@ -235,7 +241,7 @@ do
 	end
 
 	OnMenuClick = function(index)
-		if is_ribbon and menu_indexes[index] then
+		if is_ribbon then
 			index = ribbon_indexes[index]
 		end
 
