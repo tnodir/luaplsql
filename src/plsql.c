@@ -1,6 +1,7 @@
 /* PL/SQL Developer Lua Plug-In: Auxiliary Functions */
 
 #include <commdlg.h>
+#include <shellapi.h>
 
 
 /*
@@ -407,6 +408,27 @@ plsql_KillTimer (lua_State *L)
 }
 
 
+/*
+ * Arguments: url (string), [operation (string),
+ *	parameters (string), directory (string), show_mode (number)]
+ * Returns: boolean
+ */
+static int
+plsql_ShellExecute (lua_State *L)
+{
+	const char *url = lua_tostring(L, 1);
+	const char *op = lua_tostring(L, 2);
+	const char *params = lua_tostring(L, 3);
+	const char *dir = lua_tostring(L, 4);
+	const int mode = luaL_optint(L, 5, SW_SHOWNORMAL);
+
+	const int res = (int) ShellExecute(NULL, op, url, params, dir, mode);
+
+	lua_pushboolean(L, (res > 32));
+	return 1;
+}
+
+
 static luaL_Reg plsqllib[] = {
     {"Log",			plsql_Log},
     {"ShowMessage",		plsql_ShowMessage},
@@ -427,5 +449,6 @@ static luaL_Reg plsqllib[] = {
     {"GetOpenFileName",		plsql_GetOpenFileName},
     {"SetTimer",		plsql_SetTimer},
     {"KillTimer",		plsql_KillTimer},
+    {"ShellExecute",		plsql_ShellExecute},
     {NULL, NULL}
 };

@@ -17,7 +17,7 @@
 
 %LSCOMPILE% /I%LUA% /DLUA_BUILD_AS_DLL luaplsql.c
 @if errorlevel 1 goto :END
-%LSLINK% /DLL /OUT:luaplsql.dll luaplsql.obj *.res %LUA%/lua51.lib kernel32.lib user32.lib comdlg32.lib
+%LSLINK% /DLL /OUT:luaplsql.dll luaplsql.obj *.res %LUA%/lua51.lib kernel32.lib user32.lib comdlg32.lib shell32.lib
 @if errorlevel 1 goto :END
 
 @del *.obj *.manifest *.lib *.exp *.res
