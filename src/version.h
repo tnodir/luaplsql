@@ -3,9 +3,9 @@
 
 #define APP_VERSION_MAJOR	1
 #define APP_VERSION_MINOR	7
-#define APP_VERSION_PATCH	2
-#define APP_VERSION_STR		"1.7.2"
-#define APP_VERSION		0x010702
+#define APP_VERSION_PATCH	3
+#define APP_VERSION_STR		"1.7.3"
+#define APP_VERSION		0x010703
 
 #define APP_NAME		"Lua Pl/Sql Dev Plug-In"
 #define APP_PUBLISHER		"Nodir Temirkhodjaev"
